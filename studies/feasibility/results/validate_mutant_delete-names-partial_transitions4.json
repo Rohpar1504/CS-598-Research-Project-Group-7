@@ -1,0 +1,747 @@
+{
+ "target": "mutant_delete-names-partial",
+ "traces": 2072,
+ "steps": 9090,
+ "seconds": 205.4,
+ "traces_with_mismatch": 33,
+ "mismatch_kinds": [
+  [
+   "bpDeleteNames observation: .blueprints length 1 vs 0",
+   33
+  ]
+ ],
+ "property_violations_on_code": [
+  [
+   "[extra] every allocation's blueprint still exists",
+   624
+  ],
+  [
+   "a rejected request leaves the state unchanged",
+   33
+  ],
+  [
+   "[extra] binding never moves an allocation that is bound to another assignment",
+   22
+  ]
+ ],
+ "examples": [
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 1,
+   "action": {
+    "cmd": {
+     "bpDeleteNames": {
+      "names": [
+       {
+        "name": {
+         "n": 0
+        }
+       },
+       {
+        "name": {
+         "n": 1
+        }
+       }
+      ]
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 1,
+   "action": {
+    "cmd": {
+     "bpDeleteNames": {
+      "names": [
+       {
+        "name": {
+         "n": 0
+        }
+       },
+       {
+        "name": {
+         "n": 1
+        }
+       }
+      ]
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 2,
+   "action": {
+    "cmd": {
+     "bpDeleteNames": {
+      "names": [
+       {
+        "name": {
+         "n": 0
+        }
+       },
+       {
+        "name": {
+         "n": 1
+        }
+       }
+      ]
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 0,
+      "id": 0,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [
+     {
+      "id": 0,
+      "blueprint": 0,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 2,
+   "action": {
+    "cmd": {
+     "bpDeleteNames": {
+      "names": [
+       {
+        "name": {
+         "n": 0
+        }
+       },
+       {
+        "name": {
+         "n": 1
+        }
+       }
+      ]
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 0,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [
+     {
+      "id": 0,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "id": 1,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpDelete": {
+       "id": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 3,
+   "action": {
+    "cmd": {
+     "bpDeleteNames": {
+      "names": [
+       {
+        "name": {
+         "n": 0
+        }
+       },
+       {
+        "name": {
+         "n": 1
+        }
+       }
+      ]
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  }
+ ]
+}

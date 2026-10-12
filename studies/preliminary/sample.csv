@@ -1,0 +1,162 @@
+task_name,req,stratum,n_events,n_models,origin_round,rounds,change_types,intents,reason
+deterministic-data-pipeline-go,manifest,opus,10,9,1,3 5 7,extension+conflict extension+correction,BLAKE2b manifest | Manifest row count and size,expected=a7b884ca7ddbefd99a2832756342ff06c00972f3811f8265642e6ffe30c3fa17 actual=
+flowr-workflow-orchestrator,regression,opus,11,11,,5 6,extension extension+correction,Reg-6 null/null,Reg-6 null/null
+forgekit-monorepo-build-pipeline,internal-suite,opus,7,7,1,2 3 5,conflict correction extension,the project's own test suite passes,internal test suite fails
+lsm-kvstore-engine,wal-batch-format,opus,9,5,1,2 4 6 8,extension,WAL batch entry format (with expire_at),expected: 2 | actual:
+minicc-compiler-evolution,existing-programs,opus,13,11,,2 4 5 6 7 8,conflict conflict+extension extension extension+correction,existing if_else program still runs correctly,expected: 1 50 999 | actual: 1 50
+minicc-compiler-evolution,nested-call-frames,opus,11,10,1,2 5 6 7,conflict extension extension+correction,nested call args do not corrupt the stack,expected: 10 12 10 1 16 | actual: 12 10 1 16
+ml-checkpoint-reproducibility-engine,report.lineage-detail,opus,5,5,3,4,correction+extension,report passes on valid lineage,assertion failed
+secaudit-log-sentinel,prioritize.score,opus,9,5,8,9 10 12,extension extension+conflict extension+correction,prioritize composite priority_score,expected=0.58667 actual=0.3617 (diff=0.22497 tol=0.001)
+service-mesh-health-router,rate-limit-reload,opus,3,3,2,3,correction+extension,rate limit params updated on reload,Response:
+service-mesh-health-router,rate-limit-stats,opus,1,1,2,5,extension,queue_timeouts counter exposed via IPC | queued counter exposed via IPC | rate_limited counter exposed via IPC,rate_limited:
+service-mesh-health-router,routing-eligibility,opus,1,1,1,5,extension,resolve excludes circuit-open endpoints,Got: 127.0.0.1:8081
+flowctl-pipeline-wiring,dedup-keep-first,random,4,4,4,5,extension,round-4 dedup keep:first still works,"expected first record per group emitted, got (empty)"
+mlpipe-orchestrator,algo-logistic-regression,random,6,6,1,2 5,conflict extension,logistic-regression trains and reports confusion matrix,assertion failed (actual=1)
+nexus-ml-pipeline-system,conditions,random,3,2,1,5 8,extension,a step with a false == condition is skipped,status:dependency_failed
+eventq-pipeline,rates-validation,random,1,1,4,5,extension,preflight rejects malformed day key | preflight rejects non-USD base | preflight rejects non-numeric rate,"rc=2 Error: --input-dir, --rates, --output, --rejects are required"
+mlpipe-orchestrator,registry-info,random,2,2,1,2,extension,registry info returns full version details,assertion failed (actual=1)
+mlpipe-dag-orchestrator,compare-corr,random,6,4,2,3 4 5 6 7,conflict+extension extension extension+conflict extension+correction,Kendall is null when n<3 | a pair is computed for every metric combination | a two-experiment comparison reports n=2 | correlations are null when n<3,compare: small n=2 (got )
+mlops-inference-gateway,auth-required,random,3,3,1,2,correction,api key still authorizes protected endpoints,"expected status 200, got 401 (list models)"
+ml-checkpoint-forensics-engine,verify-issue-objects,random,1,1,3,4,conflict+extension,verify issue is an object with type | verify issue object carries detail,"expected issue.type tensor_checksum_mismatch, got got"
+buildctl-pipeline-orchestrator,cache-invalidation,random,2,1,1,4 8,extension,changed input invalidates the cache | initial build produces v1 output | rebuild after input change exits 0 | rebuild produces the updated v2 output,"expected='v1', got=''"
+ml-eval-report-engine,binary-eval,random,9,5,1,2 3 6 7,conflict+extension extension+correction,binary classification metric is correct,expected=0.7 actual=0 diff=0.7 tol=0.0001
+mlpipe-orchestrator,no-cache-omit-stats,random,1,1,3,4,extension,--no-cache omits cache_stats field,assertion failed (actual=1)
+sparse-iterative-solver-review,gmres-solver,random,2,2,4,5,conflict,restarted GMRES(m) solver behaves correctly,GMRES with restart=5 converges on Laplacian
+numeriforge-reproducibility-migration,env-mismatch,random,2,2,4,5 6,conflict+extension extension,audit warns on environment mismatch,R4: Audit with modified hostname shows WARNING and ENV_MISMATCH
+multiservice-deploy-pipeline,scale.set,random,1,1,7,10,extension,validation order: lock before max-replicas,expected-prefix=[ERROR: staging is locked (validation freeze)] actual=[Error: unknown command: clone]
+gomlops-platform-modernization,model-annotations,random,3,3,4,5 6,conflict+extension extension+correction,CONFLICT: annotation key lowered | annotation case dup uppercase: 409 | annotation case dup: 409 | get annotations: count | get annotations: keys lowercase,Review_Status
+sparse-iterative-pde-solver,build,random,2,2,,2 5,extension extension+correction,numsim project compiles with make,exit code 2
+service-mesh-health-router,cli-health-log,random,1,1,1,2,extension,meshctl health-log emits a JSON array,Output:
+deterministic-data-pipeline-go,transform.impute,random,3,3,6,9 10,extension extension+conflict,Impute mean | Impute median | Impute mode | Impute mode tie,expected=20 actual=
+mlpipe-orchestrator,validate-stdout-errors,random,1,1,5,7,correction,validate file-not-found via stdout JSON | validate parse error via stdout JSON,assertion failed (actual=1)
+jobforge-dag-runner,plan-ordering,random,1,1,1,2,extension,round-1 case-sensitive within-level order holds,code=127 got=<<<>>>
+mlpipe-orchestrator,registry-register,random,6,6,1,2 5 7,conflict correction extension,a registered model appears in list,assertion failed (actual=1)
+ml-checkpoint-forensics-engine,timeline-gap,random,4,4,1,8,correction,gap spans >100 steps (R1 threshold),got 100
+forgekit-monorepo-build-pipeline,cycle-detection,random,2,2,1,2 3,correction extension,cycle error names the problem as circular/cycle,cycle error message should mention circular dependency
+flowctl-pipeline-wiring,identity-passthrough,random,1,1,1,5,extension,round-1 csv identity still works,"expected records unchanged, got (empty)"
+lsm-kvstore-engine,merge-snapshot,random,6,6,4,5 6 8,extension extension+conflict,Snapshot sees merge state at snapshot time,"expected: x,y | actual: x"
+mlpipe-dag-orchestrator,report-normalized,random,2,2,4,5 7,extension extension+conflict,a constant metric normalizes to 0.5 | best experiment normalizes a metric to 1.0 | normalized_metrics covers each objective metric | report adds normalized_metr,report: normalized_metrics has 4 entries (got 0)
+eventq-pipeline,dedup-policy,random,1,1,6,7,extension+correction,round-6 dedup behavior preserved under default,rc1=2 rc2=2
+deterministic-data-pipeline-go,transform.hash,random,5,4,2,3 4 9 11 13,extension extension+correction,Mask hash,expected=ef92b778 actual=
+mlpipe-dag-orchestrator,run-metrics,random,6,5,1,2 3 4 6 7,conflict+extension extension extension+conflict extension+correction,eval_accuracy metric is captured from stdout | train_accuracy metric is captured from stdout | train_loss metric is captured from stdout,run: train_loss metric collected
+repro-verify-engine,trend-aggregate,random,1,1,4,6,extension,"trend aggregate classification counts are correct | trend overall_stability is within [0,1]",total= stable= flaky= deg=
+lsm-kvstore-engine,seqnum-continuity,random,6,4,1,2 6 8,extension,Sequence number continuity across restart,expected: 5 | actual:
+lsm-kvstore-engine,snap-scan-exclusive-end,random,4,3,5,6 8,extension,SNAP_SCAN exclusive end,expected NOT to contain: c v3 | actual: a v1 b v2 c v3
+eventq-pipeline,rejects-format,random,1,1,9,10,extension+conflict,round-9 rejects behavior preserved,"expected outputs byte-identical to round-9, got (empty)"
+minicc-compiler-evolution,short-circuit,random,4,4,2,5 7,conflict extension,&& does not evaluate right when left falsy,expected: 0 | actual:
+forgekit-monorepo-build-pipeline,single-pkg-clean-cache,random,1,1,3,4,extension,single-package clean forces a rebuild,libcrypto rebuilds after clean --package -- expected 'Building' in output
+hermetic-build-artifact-verifier,audit-cmd,random,2,2,1,5,extension,matching baseline reports matches == true | missing baseline entry yields non-match | wrong baseline reports matches == false,"expected matches == true, got got"
+deterministic-data-pipeline-go,audit,random,1,1,6,9,extension,Audit basic,expected=1 actual=0
+deterministic-data-pipeline-go,transform.window,random,2,2,1,3 10,extension+conflict extension+correction,Window error: invalid column,expected to contain: column nonexistent not found | actual: ERROR: invalid recipe: unknown op: window
+mlpipe-inference-pipeline-migration,ensemble-info,random,1,1,8,11,correction+extension,ensemble info still shows weights | ensemble info still works,exit=1 expected=0
+lsm-kvstore-engine,batch-atomicity,random,6,4,1,2 6 8,extension,BATCH atomicity with snapshots,expected: NOT_FOUND | actual: 1
+multiservice-deploy-pipeline,scale.history,random,1,1,7,11,extension,history SCALE has from/to | history SCALE has service | history shows SCALE,missing=[SCALE] in=[]
+deterministic-data-pipeline-go,error-handling,random,4,4,1,2,extension,Deduplicate transform - missing column error | Profile command - missing file error | Split transform - missing column error,expected to contain: file not found | actual: unknown command: profile
+ml-eval-report-engine,compare-type-validation,random,1,1,1,2,extension+correction,compare rejects mismatched task types,expected exit=2 actual=1
+numeriforge-reproducibility-migration,verify-verbose,random,2,2,5,6,extension,verbose verify prints the computed checksum | verbose verify prints the stored checksum,R5: Verify --verbose on valid result shows 'Stored checksum:'
+jobforge-dag-runner,plan-levels,random,2,2,1,2 4,extension extension+correction,round-1 plan text still layers a chain,code=127 got=<<<>>>
+deterministic-data-pipeline-go,transform.bin,random,1,1,2,3,extension+correction,Bin quantile | Bin width,"expected=[0,25) actual="
+sparse-iterative-pde-solver,matinfo-frobenius,random,1,1,5,6,correction+extension,matinfo Frobenius bounds spectral radius | matinfo Frobenius norm on diagonal matrix,exit code 1
+forgekit-monorepo-build-pipeline,profile-scoped-clean,random,1,1,3,4,extension,clean --profile debug preserves release artifacts,release artifact should survive clean --profile debug
+lsm-kvstore-engine,tx-scan,random,6,4,1,2 4 6 8,extension,TX_SCAN,expected to contain: a 1 | actual:
+lsm-kvstore-engine,scan-reverse,random,6,3,1,2 6 8,extension,SCAN --reverse,expected: ee | actual: dd
+deterministic-data-pipeline-go,transform.deduplicate,random,1,1,2,3,extension+correction,Deduplicate transform - keep last,"expected=3,Alice,300 actual=1,Alice,100"
+lsm-kvstore-engine,cursor-next-prev,random,4,4,6,8,extension,CURSOR_NEXT then CURSOR_PREV,expected: a v1 | actual: ERROR: unknown command
+flowr-workflow-orchestrator,execution,random,1,1,1,5,extension+correction,Reg-1 events.ndjson missing | Reg-1 rc: $RC | Reg-1 report.json missing,Reg-1 rc: 4
+ml-checkpoint-reproducibility-engine,audit-lineage.duplicate,random,1,1,1,7,correction+extension,duplicate IDs rejected | duplicate IDs report valid=false,assertion failed
+lsm-kvstore-engine,persistence,random,6,3,1,2 4 5 6 8,extension extension+conflict,Persistence of deletes,expected: NOT_FOUND dval2 | actual: dval1 dval2
+deterministic-data-pipeline-go,transform.rename-drop,random,7,7,1,2 3,extension extension+correction,Encode onehot drop | Encode onehot no-drop,"expected=id,color_blue,color_green,color_red,value actual="
+buildctl-pipeline-orchestrator,selective-targets,random,3,2,1,2 4 8,extension,--targets builds the target plus transitive deps | a transitive dependency is built | building specific targets exits 0 | the requested target is built,"expected exit=0, got exit=1"
+ml-eval-report-engine,regression-detection,random,2,2,1,2,extension+correction,compare detects regression -> FAIL,expected exit=1 actual=0
+multiservice-deploy-pipeline,test.fail-fast,random,4,4,1,3 4,conflict+extension correction+extension,fail-fast api-gateway passes | fail-fast stops at failure,missing=[TEST api-gateway PASS] in=[ERROR: Service --fail-fast not found]
+ml-checkpoint-reproducibility-engine,compare.shape-mismatch,random,1,1,4,7,correction+extension,mismatched tensor flagged shape_mismatch | rank mismatch flagged shape_mismatch | rank mismatch makes comparison fail,assertion failed
+repro-verify-engine,dependency-analysis,random,2,2,1,3 4,correction+extension extension,critical path computed for the DAG | critical path for a linear chain | parallel groups computed for the DAG | topological order breaks ties alphabetically | to,"expected topological_order ends step-c, got got"
+gomlops-platform-modernization,normalize-symmetric,random,3,3,3,5 6,conflict+extension extension+correction,"R3 regression: normalize [-1,1]","expected value matches expectation, got (empty)"
+nexus-ml-pipeline-system,execution-ordering,random,1,1,1,5,extension,diamond DAG runs root first and join last,status:
+mlpipe-dag-orchestrator,status-flags,random,2,2,6,7,extension+conflict,combined flags keep completed experiments | combined flags limit stages | combined flags show the requested stage,status: combined shows 4 completed experiments (got )
+multiservice-deploy-pipeline,validate.manifest,random,9,9,1,2 3 10,conflict+extension extension,validate duplicate ports,missing=[ERROR:] in=[VALID]
+sparse-iterative-pde-solver,dense-solve,random,3,3,,2 6,correction+extension extension+correction,pre-existing dense-solve still works,exit code 1
+nexus-ml-pipeline-system,condition-logic,random,3,3,5,6 7 8,extension,&& binds tighter than || in A||B&&C | && condition runs when both sides true | contains keyword against a step output reference | contains keyword runs on subst,status:completed
+forgekit-monorepo-build-pipeline,manifest-continuation,random,1,1,1,2,extension,backslash continuation lines are joined,libstore desc joined correctly -- expected 'crash recovery' in output
+nexus-ml-pipeline-system,capture-regex,random,3,2,2,5 8,extension,"object-form regex capture stores first group | object-form regex capture with another pattern | regex no-match leaves var unset, downstream fails",status:succeeded out=null
+lsm-kvstore-engine,prefix-compression-compaction,random,8,7,5,6 8,extension,Compaction with prefix compression,expected: OK | actual: ERROR: unknown command
+mlpipe-dag-orchestrator,sweep-stats,random,3,3,3,4 5 7,conflict+extension extension extension+conflict,a third group's mean is computed | another group's mean is computed | per-group mean is computed | per-group min is computed | per-group sample std is computed,sweep: LR=0.001 mean ~0.533 (got )
+numeriforge-reproducibility-migration,verify-format,random,2,2,5,6,extension,verify uses INTEGRITY_FAIL token for corrupted result | verify uses INTEGRITY_OK token for valid result,R5: Verify on valid result contains INTEGRITY_OK:
+repro-verify-engine,trend-subcommand,random,1,1,4,6,extension,trend tracks steps absent from some reports,total_steps=
+nexus-ml-pipeline-system,train-integration,random,3,2,1,5 8,extension,train step creates a tracked experiment | train step experiment appears in experiment list,status:succeeded exp=null
+lsm-kvstore-engine,merge-compaction-snapshot,random,9,8,4,5 6 8,extension extension+conflict,Compaction preserves MERGE intermediates with snapshot,"expected: a,b | actual: NOT_FOUND"
+hermetic-build-artifact-verifier,verify-rebuild,random,1,1,4,5,extension,verify cached and fresh hashes are equal | verify prints rebuilding-from-clean message | verify reports cached_size and fresh_size | verify uses cached_hash/fre,wrong fields
+ml-checkpoint-forensics-engine,build,random,9,7,,4 5 6 7 9,conflict conflict+extension correction correction+extension,mlforge project compiles,go build failed
+deterministic-data-pipeline-go,transform.split,random,1,1,2,3,extension+correction,Split transform - basic | Split transform - column position preserved | Split transform - more parts than names,"expected=id,first,last,age actual=id,first,age,last"
+mlpipe-dag-orchestrator,export-json,random,2,2,5,6 7,extension+conflict extension+correction,conflict json preserves sort order | json objects key by column header,export: json first element experiment_id correct (got null)
+ml-checkpoint-reproducibility-engine,compare-outputs,random,1,1,1,2,correction,custom atol echoed in output | missing tensors listed in missing_in_file1 | relaxed mode echoed in output,assertion failed
+lsm-kvstore-engine,wal-segments,random,2,2,7,8,extension,Persistence with WAL segments,expected: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+buildctl-pipeline-orchestrator,imports,random,3,2,2,3 4 8,extension extension+correction,a pipeline imports targets from another file | both local and imported targets build | imported targets merge into the graph | the imported target's command run,"expected exit=0, got exit=1"
+hermetic-build-artifact-verifier,lockfile-errors,random,1,1,2,4,conflict+extension,invalid lockfile JSON rejected | lock-diff rejects invalid lockfile A | lock-diff rejects missing lockfile B | missing lockfile file rejected,missing
+buildctl-pipeline-orchestrator,cache-key,random,4,3,1,2 4 8,extension,changing env changes the cache key,key_a= key_b=
+lsm-kvstore-engine,cursor-stats,random,5,5,6,8,extension,STATS open_cursors,expected: 2 | actual:
+mlpipe-dag-orchestrator,compare-tie,random,5,3,2,3 4 6 7,conflict+extension extension+conflict extension+correction,tie scenario depth-0 experiment | tie scenario depth-2 experiment,compare: tie test exp_z=3 depth=0 (got 2)
+ml-checkpoint-reproducibility-engine,json-errors.unreadable,random,1,1,2,8,conflict,drift-analysis emits JSON error on bad file | drift-analysis errors on unreadable input,assertion failed
+minicc-compiler-evolution,hashmap-literal,random,1,1,4,7,extension,hashmap dot and bracket read,expected: 1 2 | actual:
+service-mesh-health-router,weight-zero,random,1,1,1,4,conflict+extension,resolve skips weight-0 endpoints,Got: Error: no eligible endpoint
+hermetic-build-artifact-verifier,check-cmd,random,1,1,2,5,extension,unchanged state reports all_match == true,mismatch
+forgekit-monorepo-build-pipeline,journal-skip,random,1,1,6,8,extension,build_skip records cache_hit=true | build_skip trigger remains manual,F15a: build_skip trigger remains manual
+buildctl-pipeline-orchestrator,deps-reverse,random,1,1,4,8,extension,a leaf has reverse dependencies | deps reports reverse dependencies | reverse_deps is a sorted array,"expected exit=0, got exit=1"
+buildctl-pipeline-orchestrator,variables-cache,random,2,1,2,4 8,extension,a variable change changes the cache key | a variable value is expanded into output | changing a variable forces a rebuild | rebuild uses the new variable value,"expected='1.0', got=''"
+sparse-iterative-solver-review,true-residual,random,1,1,3,5,conflict,residual_norm and converged use the recomputed true residual,True residual correct for BiCGSTAB
+ml-checkpoint-reproducibility-engine,toml.dotted-keys,random,1,1,2,7,correction+extension,root-level dotted keys resolve,assertion failed
+sparse-iterative-pde-solver,matinfo-dd,random,1,1,5,6,correction+extension,matinfo computes strict diagonal dominance | matinfo near-weak diagonal dominance edge case | matinfo with a missing diagonal entry,exit code 1
+mlpipe-dag-orchestrator,compare,random,6,4,2,3 4 5 6 7,conflict+extension extension extension+conflict extension+correction,all included experiments are counted | compare on two run pipelines succeeds | output lists the compared pipeline names,"compare: inline compare exits 0 (exit=1, out=)"
+mlpipe-dag-orchestrator,sweep-effect,random,2,2,3,4 7,conflict+extension extension+conflict,effect size is computed from pooled std | effect size is non-null when computable,sweep: effect_size is not null (got null)
+multiservice-deploy-pipeline,promote.event,random,6,5,2,3 4 8 11,conflict+extension correction+extension extension,history prod: promote api-gateway | history prod: promote order-service | history prod: promote order-service source env | history prod: promote source env | hi,missing=[PROMOTE api-gateway] in=[]
+buildctl-pipeline-orchestrator,build-basic,random,2,1,1,4 8,extension,a simple single-target build succeeds | the executed target is reported built | the target command produces the expected output,"expected exit=0, got exit=2"
+repro-verify-engine,policy-raw-status,random,1,1,3,4,extension,raw overall_status stays FAIL though policy passes,exit=2 raw=
+mlpipe-dag-orchestrator,report-rankings,random,5,4,1,2 3 4 6,conflict+extension extension extension+correction,rankings are 1-indexed | train_loss has a ranking list,report: train_loss ranking exists
+ml-checkpoint-reproducibility-engine,drift.convergence-nonstrict,random,3,3,5,6 7 8,conflict correction+extension extension,equal steps are converging (r5) | equal steps overall converging (r5),assertion failed
+lsm-kvstore-engine,sstable-range-tombstone-format,random,6,4,1,2 6 8,extension,Range tombstone section in SSTable,expected: 1 | actual:
+ml-checkpoint-reproducibility-engine,validate-manifest,random,1,1,1,2,correction,a minimal valid manifest validates | a valid manifest validates | invalid timestamp reported | valid manifest reports valid=true,assertion failed
+mlpipe-orchestrator,history-command,random,1,1,6,7,correction,history --limit caps results | history empty with no runs | history filters by pipeline | history filters by status,assertion failed (actual=1)
+gomlops-platform-modernization,inference-response,random,6,5,1,2 5 6,conflict+extension extension+correction,inference has latency_ms | inference version from stage load | inference version is integer,null
+mlpipe-dag-orchestrator,report-best,random,3,3,1,2 4,conflict+extension extension,report selects a best experiment,report: best_experiment set
+deterministic-data-pipeline-go,transform.temporal,random,2,2,7,9 10,extension extension+conflict,Temporal diff,expected=0 actual=2
+gomlops-platform-modernization,template-parameters,random,1,1,2,3,conflict+extension,create param template | execute param template | template has parameters,null
+deterministic-data-pipeline-go,transform.normalize,random,3,2,2,3 5 12,extension+conflict extension+correction,Normalize default method: different values | Normalize default method: identical values,expected=0 actual=
+multiservice-deploy-pipeline,build.run,random,7,7,1,2 3 4,conflict+extension correction+extension extension,build single - api-gateway built (dep) | build single - user-service built (dep),missing=[BUILD api-gateway OK] in=[BUILD order-service OK]
+nexus-ml-pipeline-system,capture-output,random,4,3,2,5 6 8,extension,captured var is referenced by a later step | captured vars chain across multiple steps | failed capture step makes dependent step fail | runtime capture wins ov,status: var=
+buildctl-pipeline-orchestrator,cache-key-fix,random,2,1,3,4 8,extension,hook arrays are included in the cache key | hook chain length changes the cache key | sorted dependency names enter the cache key | sorted output paths enter th,a= b=
+mlops-inference-gateway,model-create,random,2,2,1,2 6,correction,model creation still works,"expected status 201, got 400 (create model)"
+repro-verify-engine,diff-subcommand,random,2,2,2,3 4,correction+extension extension,diff reports a removed step as removed | diff reports an added step as added | diff step_changes sorted by step_id | diff summary counts added/removed/regressio,change_type=
+ml-checkpoint-forensics-engine,ingest,random,1,1,1,4,conflict+extension,ingest counts log shards,got 5
+ml-checkpoint-reproducibility-engine,toml.inline-comments,random,1,1,2,7,correction+extension,inline comments stripped from values | report parses commented manifest,assertion failed
+mlops-inference-gateway,auth-login,random,4,4,1,2 6,correction,deployer login returns deployer role,"expected status 200, got 401 (login deployer)"
+lsm-kvstore-engine,ttl-wal-format,random,6,6,2,5 8,extension extension+conflict,WAL binary format includes expire_at for TTL entry,expected: 1 | actual: --ttl
+ml-checkpoint-reproducibility-engine,merge.tensor-sources,random,1,1,1,2,correction,tensor_sources lists contributing files | unique tensor marked unique,assertion failed
+hermetic-build-artifact-verifier,fingerprint,random,1,1,1,3,extension+correction,build emits a 64-hex input fingerprint | changing a source changes the fingerprint,got 0
+eventq-pipeline,audit-digest,random,1,1,3,5,extension,digest does not alter other outputs,rcA=2 rcB=2
+nexus-ml-pipeline-system,pipeline-description,random,1,1,6,7,extension,description copied to run output,desc=null
+mlops-inference-gateway,auth-register,random,3,3,1,2,correction,admin creates a deployer user | duplicate username is rejected,"expected status 201, got 401 (register deployer)"
+lsm-kvstore-engine,merge-after-put,random,6,6,4,5 6 8,extension extension+conflict,PUT then MERGE,"expected: x,y,z | actual: x"
+multiservice-deploy-pipeline,restore.history,random,2,2,4,5 10,extension,RESTORE event has ISO8601 timestamp | history: RESTORE event for api-gateway | history: RESTORE event for user-service | history: rollback event shows restored ,missing=[ROLLBACK api-gateway] in=[]
+multiservice-deploy-pipeline,promote.skip,random,4,4,2,3 4 11,conflict+extension correction+extension extension,promote mixed: user-service skipped | promote skip: all 5 skipped | promote skip: has SKIP | promote skip: no extra promote event recorded | promote skip: summa,missing=[SKIP (same version)] in=[ERROR: promote takes no positional arguments]
+mlpipe-orchestrator,registry-list-wrapped,random,1,1,5,7,correction,empty registry list is wrapped | registry list returns wrapped object,assertion failed (actual=1)
+sparse-iterative-solver-review,duplicate-entry-merge,random,1,1,3,5,conflict,"duplicate (row,col) entries are summed when building the matrix",Analyze with duplicates reports correct nnz (4 after merge)
+sparse-iterative-solver-review,zero-rhs,random,1,1,3,5,conflict,zero RHS short-circuits to the zero solution,CG zero RHS reports iterations: 0
+deterministic-data-pipeline-go,pipeline,random,7,6,1,2 3 4 6,extension extension+correction,Compare pipeline step | Pipeline with profile step,expected=0 actual=1
+mlpipe-inference-pipeline-migration,ensemble-create,random,2,2,7,9 12,extension,ensemble create still works,exit=1 expected=0
+lsm-kvstore-engine,merge-multi-sstable,random,9,8,4,5 6 8,extension extension+conflict,MERGE across multiple SSTables,"expected: a,b | actual: NOT_FOUND"
+mlpipe-inference-pipeline-migration,profile,random,2,2,6,9 11,correction+extension extension,profile still shows sparsity | profile still works,exit=1 expected=0
+mlpipe-dag-orchestrator,report-composite,random,2,2,4,5 7,extension extension+conflict,composite score for the worst experiment | composite score is min-max based mean | composite scores order experiments correctly | composite_scores for the confl,report: composite_scores has 4 entries (got 0)
+repro-verify-engine,graph-subcommand,random,3,3,1,2 3 4,correction+extension extension,graph DOT output contains dependency edges | graph JSON lists dependency edges | graph JSON lists sorted nodes | graph reports transitive dependencies,"expected nodes step-a,step-b,step-c, got got"
+ml-checkpoint-forensics-engine,lineage,random,2,2,1,3 8,correction,nodes sorted by creation timestamp,got model_epoch3.mlck
+buildctl-pipeline-orchestrator,variables-cli,random,3,2,2,3 4 8,extension extension+correction,--var beats an imported pipeline default,"expected='arm64', got=''"
+repro-verify-engine,env-normalization,random,3,3,1,2 3 4,correction+extension extension,blocked env vars yield consistent output | environment normalization yields a passing run | per-step env overrides yield consistent output,status:
+mlpipe-dag-orchestrator,validate-missing-field,random,1,1,1,4,conflict+extension,missing-command rejection prints a message | validation rejects a stage missing command,validate: missing command exits 1
+mlpipe-orchestrator,cache-storage,random,1,1,2,4,extension,cache entries stored under .mlpipe/cache,assertion failed (actual=1)
+mlpipe-inference-pipeline-migration,schema,random,2,2,9,11 12,correction+extension extension,schema still shows feature count | schema still works,exit=1 expected=0
+repro-verify-engine,diff-regressions,random,1,1,2,4,extension,diff flags a PASS->FAIL step as a regression,exit=2 reg=
+multiservice-deploy-pipeline,semver.diff,random,3,3,3,4 11,correction+extension extension,diff: analytics 1.10 vs 1.9 non-lexicographic | diff: same semver newer timestamp,missing=[(staging newer)] in=[]
+repro-verify-engine,targeted-mode,random,2,2,1,3 4,correction+extension extension,targeted mode runs deps and verifies target | targeted mode skips unrelated steps,step-z status:
+deterministic-data-pipeline-go,transform.derive,random,6,6,1,2 3,extension extension+correction,Assert transform - complex expression | Normalize + derive chain | Split then derive chain,expected=0 actual=1
+sparse-iterative-pde-solver,gmres-solver,random,1,1,1,2,extension+correction,GMRES converges on a general system,exit code 1
+lsm-kvstore-engine,cursor-merged-values,random,5,5,6,8,extension,Cursor shows merged values,"expected: k x,y | actual: k x"
+lsm-kvstore-engine,scan-exclusive-end-prefix,random,2,1,5,6 8,extension,SCAN exclusive end with prefix flag,expected to contain: user:1 v1 | actual:

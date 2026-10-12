@@ -1,0 +1,556 @@
+[
+ {
+  "case": "reference",
+  "search": {
+   "alloc": {
+    "seconds": 0.1,
+    "states": 1487
+   },
+   "unit": {
+    "seconds": 0.0,
+    "states": 11
+   },
+   "module": {
+    "seconds": 0.0,
+    "states": 281
+   },
+   "access": {
+    "seconds": 0.0,
+    "states": 20
+   }
+  },
+  "counterexamples": [
+   {
+    "area": "alloc",
+    "property": "[extra] every allocation's blueprint still exists",
+    "steps": 3,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "bpDelete": {
+       "id": 0
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   },
+   {
+    "area": "alloc",
+    "property": "[extra] binding never moves an allocation that is bound to another assignment",
+    "steps": 4,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   }
+  ]
+ },
+ {
+  "case": "bind-no-duplicate-guard",
+  "validation": {
+   "traces": 528,
+   "mismatches": 0
+  },
+  "search": {
+   "alloc": {
+    "seconds": 0.1,
+    "states": 1713
+   },
+   "unit": {
+    "seconds": 0.0,
+    "states": 11
+   },
+   "module": {
+    "seconds": 0.0,
+    "states": 281
+   },
+   "access": {
+    "seconds": 0.0,
+    "states": 20
+   }
+  },
+  "counterexamples": [
+   {
+    "area": "alloc",
+    "property": "a bind that adds to an assignment succeeds only if the assignment has no bound allocations",
+    "steps": 4,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   },
+   {
+    "area": "alloc",
+    "property": "[extra] every allocation's blueprint still exists",
+    "steps": 3,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "bpDelete": {
+       "id": 0
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   },
+   {
+    "area": "alloc",
+    "property": "[extra] binding never moves an allocation that is bound to another assignment",
+    "steps": 4,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   }
+  ]
+ },
+ {
+  "case": "delete-names-partial",
+  "validation": {
+   "traces": 528,
+   "mismatches": 0
+  },
+  "search": {
+   "alloc": {
+    "seconds": 0.1,
+    "states": 1487
+   },
+   "unit": {
+    "seconds": 0.0,
+    "states": 11
+   },
+   "module": {
+    "seconds": 0.0,
+    "states": 281
+   },
+   "access": {
+    "seconds": 0.0,
+    "states": 20
+   }
+  },
+  "counterexamples": [
+   {
+    "area": "alloc",
+    "property": "a rejected request leaves the state unchanged",
+    "steps": 2,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   },
+   {
+    "area": "alloc",
+    "property": "[extra] every allocation's blueprint still exists",
+    "steps": 3,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "bpDelete": {
+       "id": 0
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   },
+   {
+    "area": "alloc",
+    "property": "[extra] binding never moves an allocation that is bound to another assignment",
+    "steps": 4,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   }
+  ]
+ },
+ {
+  "case": "flash-any-image",
+  "validation": {
+   "traces": 528,
+   "mismatches": 0
+  },
+  "search": {
+   "alloc": {
+    "seconds": 0.1,
+    "states": 1487
+   },
+   "unit": {
+    "seconds": 0.0,
+    "states": 11
+   },
+   "module": {
+    "seconds": 0.1,
+    "states": 625
+   },
+   "access": {
+    "seconds": 0.0,
+    "states": 20
+   }
+  },
+  "counterexamples": [
+   {
+    "area": "alloc",
+    "property": "[extra] every allocation's blueprint still exists",
+    "steps": 3,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "bpDelete": {
+       "id": 0
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   },
+   {
+    "area": "alloc",
+    "property": "[extra] binding never moves an allocation that is bound to another assignment",
+    "steps": 4,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   },
+   {
+    "area": "module",
+    "property": "a flash succeeds only with an image some module already had",
+    "steps": 3,
+    "trace": [
+     {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     {
+      "modFlash": {
+       "id": 0,
+       "image": {
+        "image": {
+         "i": 1
+        }
+       }
+      }
+     }
+    ],
+    "model_matches_code_on_trace": true,
+    "reproduces": true
+   }
+  ]
+ }
+]

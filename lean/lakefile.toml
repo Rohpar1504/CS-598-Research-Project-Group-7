@@ -1,0 +1,14 @@
+name = "companion"
+defaultTargets = ["Companion", "Forge", "forge-model"]
+
+[[lean_lib]]
+name = "Companion"
+globs = ["Companion.+"]
+
+[[lean_lib]]
+name = "Forge"
+globs = ["Forge.+"]
+
+[[lean_exe]]
+name = "forge-model"
+root = "Forge.Main"

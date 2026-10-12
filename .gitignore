@@ -1,0 +1,4 @@
+# Downloaded benchmark data. Benchmarks ask that their data not be redistributed
+# (canary strings), so it stays out of the repository. See studies/*/fetch_data.sh.
+data/
+__pycache__/

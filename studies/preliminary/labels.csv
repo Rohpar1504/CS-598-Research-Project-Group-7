@@ -1,0 +1,162 @@
+task_name,req,stratum,kind,manifestation,note
+deterministic-data-pipeline-go,manifest,opus,COMPUTE,WRONG,
+flowr-workflow-orchestrator,regression,opus,OTHER,WRONG,opaque round-6 regression check
+forgekit-monorepo-build-pipeline,internal-suite,opus,OTHER,BREAK,project's own test suite fails
+lsm-kvstore-engine,wal-batch-format,opus,FORMAT,WRONG,on-disk WAL format
+minicc-compiler-evolution,existing-programs,opus,COMPUTE,WRONG,compiler semantics
+minicc-compiler-evolution,nested-call-frames,opus,COMPUTE,WRONG,
+ml-checkpoint-reproducibility-engine,report.lineage-detail,opus,INPUT,WRONG,valid lineage falsely rejected
+secaudit-log-sentinel,prioritize.score,opus,COMPUTE,WRONG,round 10 is a conflict round: possibly a change of mind
+service-mesh-health-router,rate-limit-reload,opus,STATE,WRONG,
+service-mesh-health-router,rate-limit-stats,opus,STATE,WRONG,counters reflect runtime events
+service-mesh-health-router,routing-eligibility,opus,STATE,WRONG,
+flowctl-pipeline-wiring,dedup-keep-first,random,COMPUTE,WRONG,
+mlpipe-orchestrator,algo-logistic-regression,random,COMPUTE,WRONG,
+nexus-ml-pipeline-system,conditions,random,COMPUTE,WRONG,"single pipeline run, not persistent state"
+eventq-pipeline,rates-validation,random,INPUT,BREAK,CLI arguments changed
+mlpipe-orchestrator,registry-info,random,STATE,WRONG,
+mlpipe-dag-orchestrator,compare-corr,random,COMPUTE,WRONG,
+mlops-inference-gateway,auth-required,random,STATE,WRONG,authorization
+ml-checkpoint-forensics-engine,verify-issue-objects,random,FORMAT,WRONG,
+buildctl-pipeline-orchestrator,cache-invalidation,random,STATE,WRONG,build cache across invocations
+ml-eval-report-engine,binary-eval,random,COMPUTE,WRONG,
+mlpipe-orchestrator,no-cache-omit-stats,random,FORMAT,WRONG,
+sparse-iterative-solver-review,gmres-solver,random,COMPUTE,WRONG,
+numeriforge-reproducibility-migration,env-mismatch,random,STATE,WRONG,uncertain: compares stored records with environment
+multiservice-deploy-pipeline,scale.set,random,STATE,BREAK,lock state; command no longer recognized
+gomlops-platform-modernization,model-annotations,random,STATE,WRONG,case-insensitive uniqueness of annotation keys
+sparse-iterative-pde-solver,build,random,OTHER,BREAK,build fails
+service-mesh-health-router,cli-health-log,random,FORMAT,WRONG,
+deterministic-data-pipeline-go,transform.impute,random,COMPUTE,WRONG,
+mlpipe-orchestrator,validate-stdout-errors,random,INPUT,WRONG,
+jobforge-dag-runner,plan-ordering,random,COMPUTE,BREAK,exit 127
+mlpipe-orchestrator,registry-register,random,STATE,WRONG,registered model missing from list
+ml-checkpoint-forensics-engine,timeline-gap,random,COMPUTE,WRONG,boundary
+forgekit-monorepo-build-pipeline,cycle-detection,random,INPUT,WRONG,error message wording
+flowctl-pipeline-wiring,identity-passthrough,random,COMPUTE,WRONG,
+lsm-kvstore-engine,merge-snapshot,random,STATE,WRONG,
+mlpipe-dag-orchestrator,report-normalized,random,COMPUTE,WRONG,
+eventq-pipeline,dedup-policy,random,COMPUTE,BREAK,usage error
+deterministic-data-pipeline-go,transform.hash,random,COMPUTE,WRONG,
+mlpipe-dag-orchestrator,run-metrics,random,STATE,WRONG,uncertain: recorded run metrics
+repro-verify-engine,trend-aggregate,random,COMPUTE,WRONG,
+lsm-kvstore-engine,seqnum-continuity,random,STATE,WRONG,
+lsm-kvstore-engine,snap-scan-exclusive-end,random,STATE,WRONG,
+eventq-pipeline,rejects-format,random,FORMAT,WRONG,
+minicc-compiler-evolution,short-circuit,random,COMPUTE,WRONG,
+forgekit-monorepo-build-pipeline,single-pkg-clean-cache,random,STATE,WRONG,
+hermetic-build-artifact-verifier,audit-cmd,random,STATE,WRONG,uncertain: stored baseline
+deterministic-data-pipeline-go,audit,random,COMPUTE,WRONG,
+deterministic-data-pipeline-go,transform.window,random,INPUT,WRONG,
+mlpipe-inference-pipeline-migration,ensemble-info,random,STATE,BREAK,
+lsm-kvstore-engine,batch-atomicity,random,STATE,WRONG,
+multiservice-deploy-pipeline,scale.history,random,STATE,WRONG,event history
+deterministic-data-pipeline-go,error-handling,random,INPUT,BREAK,command removed
+ml-eval-report-engine,compare-type-validation,random,INPUT,WRONG,
+numeriforge-reproducibility-migration,verify-verbose,random,FORMAT,WRONG,
+jobforge-dag-runner,plan-levels,random,COMPUTE,BREAK,exit 127
+deterministic-data-pipeline-go,transform.bin,random,COMPUTE,WRONG,
+sparse-iterative-pde-solver,matinfo-frobenius,random,COMPUTE,BREAK,
+forgekit-monorepo-build-pipeline,profile-scoped-clean,random,STATE,WRONG,
+lsm-kvstore-engine,tx-scan,random,STATE,WRONG,
+lsm-kvstore-engine,scan-reverse,random,STATE,WRONG,
+deterministic-data-pipeline-go,transform.deduplicate,random,COMPUTE,WRONG,
+lsm-kvstore-engine,cursor-next-prev,random,STATE,BREAK,command removed
+flowr-workflow-orchestrator,execution,random,COMPUTE,BREAK,
+ml-checkpoint-reproducibility-engine,audit-lineage.duplicate,random,INPUT,WRONG,
+lsm-kvstore-engine,persistence,random,STATE,WRONG,
+deterministic-data-pipeline-go,transform.rename-drop,random,COMPUTE,WRONG,
+buildctl-pipeline-orchestrator,selective-targets,random,COMPUTE,BREAK,
+ml-eval-report-engine,regression-detection,random,COMPUTE,WRONG,
+multiservice-deploy-pipeline,test.fail-fast,random,COMPUTE,BREAK,CLI flag no longer parsed
+ml-checkpoint-reproducibility-engine,compare.shape-mismatch,random,COMPUTE,WRONG,
+repro-verify-engine,dependency-analysis,random,COMPUTE,WRONG,
+gomlops-platform-modernization,normalize-symmetric,random,COMPUTE,WRONG,
+nexus-ml-pipeline-system,execution-ordering,random,COMPUTE,WRONG,
+mlpipe-dag-orchestrator,status-flags,random,STATE,WRONG,query over recorded experiments
+multiservice-deploy-pipeline,validate.manifest,random,INPUT,WRONG,
+sparse-iterative-pde-solver,dense-solve,random,COMPUTE,BREAK,
+nexus-ml-pipeline-system,condition-logic,random,COMPUTE,WRONG,
+forgekit-monorepo-build-pipeline,manifest-continuation,random,INPUT,WRONG,
+nexus-ml-pipeline-system,capture-regex,random,COMPUTE,WRONG,
+lsm-kvstore-engine,prefix-compression-compaction,random,STATE,BREAK,command removed
+mlpipe-dag-orchestrator,sweep-stats,random,COMPUTE,WRONG,
+numeriforge-reproducibility-migration,verify-format,random,FORMAT,WRONG,
+repro-verify-engine,trend-subcommand,random,COMPUTE,WRONG,
+nexus-ml-pipeline-system,train-integration,random,STATE,WRONG,
+lsm-kvstore-engine,merge-compaction-snapshot,random,STATE,WRONG,
+hermetic-build-artifact-verifier,verify-rebuild,random,FORMAT,WRONG,
+ml-checkpoint-forensics-engine,build,random,OTHER,BREAK,build fails
+deterministic-data-pipeline-go,transform.split,random,COMPUTE,WRONG,
+mlpipe-dag-orchestrator,export-json,random,FORMAT,WRONG,
+ml-checkpoint-reproducibility-engine,compare-outputs,random,FORMAT,WRONG,
+lsm-kvstore-engine,wal-segments,random,STATE,WRONG,
+buildctl-pipeline-orchestrator,imports,random,COMPUTE,BREAK,
+hermetic-build-artifact-verifier,lockfile-errors,random,INPUT,WRONG,
+buildctl-pipeline-orchestrator,cache-key,random,COMPUTE,WRONG,cache key is a function of inputs
+lsm-kvstore-engine,cursor-stats,random,STATE,WRONG,
+mlpipe-dag-orchestrator,compare-tie,random,COMPUTE,WRONG,
+ml-checkpoint-reproducibility-engine,json-errors.unreadable,random,INPUT,WRONG,
+minicc-compiler-evolution,hashmap-literal,random,COMPUTE,WRONG,
+service-mesh-health-router,weight-zero,random,STATE,WRONG,
+hermetic-build-artifact-verifier,check-cmd,random,STATE,WRONG,
+forgekit-monorepo-build-pipeline,journal-skip,random,STATE,WRONG,
+buildctl-pipeline-orchestrator,deps-reverse,random,COMPUTE,BREAK,
+buildctl-pipeline-orchestrator,variables-cache,random,COMPUTE,WRONG,
+sparse-iterative-solver-review,true-residual,random,COMPUTE,WRONG,
+ml-checkpoint-reproducibility-engine,toml.dotted-keys,random,INPUT,WRONG,
+sparse-iterative-pde-solver,matinfo-dd,random,COMPUTE,BREAK,
+mlpipe-dag-orchestrator,compare,random,COMPUTE,BREAK,
+mlpipe-dag-orchestrator,sweep-effect,random,COMPUTE,WRONG,
+multiservice-deploy-pipeline,promote.event,random,STATE,WRONG,
+buildctl-pipeline-orchestrator,build-basic,random,COMPUTE,BREAK,
+repro-verify-engine,policy-raw-status,random,COMPUTE,BREAK,
+mlpipe-dag-orchestrator,report-rankings,random,FORMAT,WRONG,
+ml-checkpoint-reproducibility-engine,drift.convergence-nonstrict,random,COMPUTE,WRONG,
+lsm-kvstore-engine,sstable-range-tombstone-format,random,FORMAT,WRONG,on-disk format
+ml-checkpoint-reproducibility-engine,validate-manifest,random,INPUT,WRONG,
+mlpipe-orchestrator,history-command,random,STATE,WRONG,
+gomlops-platform-modernization,inference-response,random,FORMAT,WRONG,
+mlpipe-dag-orchestrator,report-best,random,COMPUTE,WRONG,
+deterministic-data-pipeline-go,transform.temporal,random,COMPUTE,WRONG,
+gomlops-platform-modernization,template-parameters,random,STATE,WRONG,
+deterministic-data-pipeline-go,transform.normalize,random,COMPUTE,WRONG,
+multiservice-deploy-pipeline,build.run,random,COMPUTE,WRONG,
+nexus-ml-pipeline-system,capture-output,random,COMPUTE,WRONG,
+buildctl-pipeline-orchestrator,cache-key-fix,random,COMPUTE,WRONG,
+mlops-inference-gateway,model-create,random,STATE,WRONG,
+repro-verify-engine,diff-subcommand,random,COMPUTE,WRONG,
+ml-checkpoint-forensics-engine,ingest,random,COMPUTE,WRONG,
+ml-checkpoint-reproducibility-engine,toml.inline-comments,random,INPUT,WRONG,
+mlops-inference-gateway,auth-login,random,STATE,WRONG,authorization
+lsm-kvstore-engine,ttl-wal-format,random,FORMAT,WRONG,
+ml-checkpoint-reproducibility-engine,merge.tensor-sources,random,COMPUTE,WRONG,
+hermetic-build-artifact-verifier,fingerprint,random,COMPUTE,WRONG,
+eventq-pipeline,audit-digest,random,COMPUTE,BREAK,
+nexus-ml-pipeline-system,pipeline-description,random,FORMAT,WRONG,
+mlops-inference-gateway,auth-register,random,STATE,WRONG,authorization
+lsm-kvstore-engine,merge-after-put,random,STATE,WRONG,
+multiservice-deploy-pipeline,restore.history,random,STATE,WRONG,event history
+multiservice-deploy-pipeline,promote.skip,random,STATE,BREAK,CLI arguments changed
+mlpipe-orchestrator,registry-list-wrapped,random,FORMAT,WRONG,
+sparse-iterative-solver-review,duplicate-entry-merge,random,COMPUTE,WRONG,
+sparse-iterative-solver-review,zero-rhs,random,COMPUTE,WRONG,
+deterministic-data-pipeline-go,pipeline,random,COMPUTE,WRONG,
+mlpipe-inference-pipeline-migration,ensemble-create,random,STATE,BREAK,
+lsm-kvstore-engine,merge-multi-sstable,random,STATE,WRONG,
+mlpipe-inference-pipeline-migration,profile,random,COMPUTE,BREAK,
+mlpipe-dag-orchestrator,report-composite,random,COMPUTE,WRONG,
+repro-verify-engine,graph-subcommand,random,COMPUTE,WRONG,
+ml-checkpoint-forensics-engine,lineage,random,FORMAT,WRONG,output ordering
+buildctl-pipeline-orchestrator,variables-cli,random,COMPUTE,WRONG,
+repro-verify-engine,env-normalization,random,COMPUTE,WRONG,
+mlpipe-dag-orchestrator,validate-missing-field,random,INPUT,WRONG,
+mlpipe-orchestrator,cache-storage,random,STATE,WRONG,uncertain: persisted location
+mlpipe-inference-pipeline-migration,schema,random,COMPUTE,BREAK,
+repro-verify-engine,diff-regressions,random,COMPUTE,BREAK,
+multiservice-deploy-pipeline,semver.diff,random,COMPUTE,WRONG,
+repro-verify-engine,targeted-mode,random,COMPUTE,WRONG,
+deterministic-data-pipeline-go,transform.derive,random,COMPUTE,WRONG,
+sparse-iterative-pde-solver,gmres-solver,random,COMPUTE,BREAK,
+lsm-kvstore-engine,cursor-merged-values,random,STATE,WRONG,
+lsm-kvstore-engine,scan-exclusive-end-prefix,random,STATE,WRONG,

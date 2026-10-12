@@ -1,0 +1,951 @@
+{
+ "target": "mutant_flash-any-image",
+ "traces": 2072,
+ "steps": 9090,
+ "seconds": 204.6,
+ "traces_with_mismatch": 51,
+ "mismatch_kinds": [
+  [
+   "modFlash output: .body{error} vs {module}",
+   51
+  ]
+ ],
+ "property_violations_on_code": [
+  [
+   "[extra] every allocation's blueprint still exists",
+   600
+  ],
+  [
+   "a flash succeeds only with an image some module already had",
+   51
+  ],
+  [
+   "[extra] binding never moves an allocation that is bound to another assignment",
+   22
+  ]
+ ],
+ "examples": [
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modFlash": {
+       "id": 0,
+       "image": {
+        "image": {
+         "i": 1
+        }
+       }
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 2,
+   "action": {
+    "cmd": {
+     "modFlash": {
+      "id": 0,
+      "image": {
+       "image": {
+        "i": 1
+       }
+      }
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "flash_failed"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 0,
+       "firmware": 1
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 0,
+      "firmware": 0,
+      "id": 0,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": [
+       0
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 0,
+      "firmware": 1
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modFlash": {
+       "id": 0,
+       "image": {
+        "image": {
+         "i": 1
+        }
+       }
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 3,
+   "action": {
+    "cmd": {
+     "modFlash": {
+      "id": 0,
+      "image": {
+       "image": {
+        "i": 1
+       }
+      }
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "flash_failed"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 0,
+       "firmware": 1
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 0,
+      "firmware": 0,
+      "id": 0,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     },
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 1,
+      "modules": [],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": [
+       0
+      ]
+     },
+     {
+      "id": 1,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 0,
+      "firmware": 1
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": "null",
+       "unit": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modFlash": {
+       "id": 0,
+       "image": {
+        "image": {
+         "i": 1
+        }
+       }
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 3,
+   "action": {
+    "cmd": {
+     "modFlash": {
+      "id": 0,
+      "image": {
+       "image": {
+        "i": 1
+       }
+      }
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "flash_failed"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 1,
+       "ctype": 0,
+       "firmware": 1
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 0,
+      "firmware": null,
+      "id": 0,
+      "unit": 1
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     },
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 1,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     },
+     {
+      "id": 1,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": [
+       0
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 1,
+      "ctype": 0,
+      "firmware": 1
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 1,
+       "firmware": "absent",
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modFlash": {
+       "id": 0,
+       "image": {
+        "image": {
+         "i": 1
+        }
+       }
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 3,
+   "action": {
+    "cmd": {
+     "modFlash": {
+      "id": 0,
+      "image": {
+       "image": {
+        "i": 1
+       }
+      }
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "flash_failed"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 0,
+       "firmware": 1
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 0,
+      "firmware": 0,
+      "id": 0,
+      "unit": 0
+     },
+     {
+      "ctype": 1,
+      "firmware": null,
+      "id": 1,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0,
+       1
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": [
+       0,
+       1
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 0,
+      "firmware": 1
+     },
+     {
+      "id": 1,
+      "unit": 0,
+      "ctype": 1,
+      "firmware": null
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "tagCreate": {
+       "key": 0,
+       "module": 0,
+       "value": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modFlash": {
+       "id": 0,
+       "image": {
+        "image": {
+         "i": 1
+        }
+       }
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 3,
+   "action": {
+    "cmd": {
+     "modFlash": {
+      "id": 0,
+      "image": {
+       "image": {
+        "i": 1
+       }
+      }
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "flash_failed"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 0,
+       "firmware": 1
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 0,
+      "firmware": 0,
+      "id": 0,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [
+     {
+      "id": 0,
+      "key": 0,
+      "module": 0,
+      "value": 1
+     }
+    ],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": [
+       0
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 0,
+      "firmware": 1
+     }
+    ],
+    "tags": [
+     {
+      "id": 0,
+      "module": 0,
+      "key": 0,
+      "value": 1
+     }
+    ],
+    "schema": null
+   }
+  }
+ ]
+}

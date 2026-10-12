@@ -1,0 +1,15 @@
+{
+ "target": "mutant_bind-no-duplicate-guard",
+ "traces": 528,
+ "steps": 5689,
+ "seconds": 116.8,
+ "traces_with_mismatch": 0,
+ "mismatch_kinds": [],
+ "property_violations_on_code": [
+  [
+   "[extra] every allocation's blueprint still exists",
+   29
+  ]
+ ],
+ "examples": []
+}

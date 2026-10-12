@@ -1,0 +1,1090 @@
+{
+ "target": "mutant_typea-not-doubled",
+ "traces": 528,
+ "steps": 5689,
+ "seconds": 116.7,
+ "traces_with_mismatch": 36,
+ "mismatch_kinds": [
+  [
+   "alCreate output: .body.allocations.as length 2 vs 1",
+   34
+  ],
+  [
+   "alCreate output: .body.allocations.as length 3 vs 2",
+   2
+  ]
+ ],
+ "property_violations_on_code": [
+  [
+   "allocation create yields two allocations per TYPE_A requirement set and one per other set",
+   42
+  ],
+  [
+   "[extra] every allocation's blueprint still exists",
+   26
+  ]
+ ],
+ "examples": [
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 2,
+   "action": {
+    "cmd": {
+     "alCreate": {
+      "blueprint": 1
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 0,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       },
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 1,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "id": 0,
+        "blueprint": 1,
+        "setIndex": 0,
+        "assignment": null,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 0,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "rtype": 1,
+        "count": 2,
+        "caps": [
+         0
+        ]
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 0,
+      "sets": [
+       {
+        "rtype": 0,
+        "count": 1,
+        "caps": null
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 0,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 2,
+   "action": {
+    "cmd": {
+     "alCreate": {
+      "blueprint": 1
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 0,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       },
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 1,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "id": 0,
+        "blueprint": 1,
+        "setIndex": 0,
+        "assignment": null,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 0,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "rtype": 0,
+        "count": 1,
+        "caps": null
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "rtype": 1,
+        "count": 2,
+        "caps": [
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 0,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 1,
+   "action": {
+    "cmd": {
+     "alCreate": {
+      "blueprint": 1
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 0,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       },
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 1,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "id": 0,
+        "blueprint": 1,
+        "setIndex": 0,
+        "assignment": null,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 0,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "rtype": 1,
+        "count": 2,
+        "caps": [
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 0,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 4,
+   "action": {
+    "cmd": {
+     "alCreate": {
+      "blueprint": 1
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 2,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       },
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 3,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "id": 2,
+        "blueprint": 1,
+        "setIndex": 0,
+        "assignment": null,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 0,
+      "id": 0,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "assignment": null,
+      "blueprint": 0,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 2,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 3,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "rtype": 0,
+        "count": 1,
+        "caps": null
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "rtype": 1,
+        "count": 2,
+        "caps": [
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 0,
+      "blueprint": 0,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "id": 1,
+      "blueprint": 0,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "id": 2,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 2,
+   "action": {
+    "cmd": {
+     "alCreate": {
+      "blueprint": 1
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 0,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       },
+       {
+        "assignment": null,
+        "blueprint": 1,
+        "id": 1,
+        "setIndex": 0,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "allocations": {
+      "as": [
+       {
+        "id": 0,
+        "blueprint": 1,
+        "setIndex": 0,
+        "assignment": null,
+        "status": "unbound",
+        "tenant": "hidden"
+       }
+      ]
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 0,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     },
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "rtype": 0,
+        "count": 1,
+        "caps": null
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "rtype": 1,
+        "count": 2,
+        "caps": [
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 0,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": null,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  }
+ ]
+}

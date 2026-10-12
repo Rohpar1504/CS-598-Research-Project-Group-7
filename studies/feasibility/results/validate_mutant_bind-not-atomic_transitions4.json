@@ -1,0 +1,1048 @@
+{
+ "target": "mutant_bind-not-atomic",
+ "traces": 2072,
+ "steps": 9090,
+ "seconds": 204.9,
+ "traces_with_mismatch": 83,
+ "mismatch_kinds": [
+  [
+   "alBind observation: .allocations[].assignment: null vs 0; .allocations[].status: \"unbound\" vs \"bound\"",
+   60
+  ],
+  [
+   "alBind observation: .allocations[].assignment: 1 vs 0",
+   17
+  ],
+  [
+   "alBind observation: .allocations[].assignment: null vs 1; .allocations[].status: \"unbound\" vs \"bound\"",
+   6
+  ]
+ ],
+ "property_violations_on_code": [
+  [
+   "[extra] every allocation's blueprint still exists",
+   600
+  ],
+  [
+   "a rejected request leaves the state unchanged",
+   83
+  ],
+  [
+   "[extra] binding never moves an allocation that is bound to another assignment",
+   22
+  ]
+ ],
+ "examples": [
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alDeleteIds": {
+       "ids": [
+        {
+         "id": {
+          "k": 0
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "remove"
+        ],
+        [
+         1,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 3,
+   "action": {
+    "cmd": {
+     "alBind": {
+      "assignment": 1,
+      "ops": [
+       [
+        0,
+        "remove"
+       ],
+       [
+        1,
+        "add"
+       ]
+      ],
+      "tenant": "absent"
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "rtype": 1,
+        "count": 2,
+        "caps": [
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 1,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": 1,
+      "status": "bound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alDeleteIds": {
+       "ids": [
+        {
+         "id": {
+          "k": 0
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "remove"
+        ],
+        [
+         1,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 4,
+   "action": {
+    "cmd": {
+     "alBind": {
+      "assignment": 1,
+      "ops": [
+       [
+        0,
+        "remove"
+       ],
+       [
+        1,
+        "add"
+       ]
+      ],
+      "tenant": "absent"
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "rtype": 0,
+        "count": 1,
+        "caps": null
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 1,
+      "sets": [
+       {
+        "rtype": 1,
+        "count": 2,
+        "caps": [
+         0
+        ]
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 1,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": 1,
+      "status": "bound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alDeleteIds": {
+       "ids": [
+        {
+         "id": {
+          "k": 0
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "remove"
+        ],
+        [
+         1,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 4,
+   "action": {
+    "cmd": {
+     "alBind": {
+      "assignment": 1,
+      "ops": [
+       [
+        0,
+        "remove"
+       ],
+       [
+        1,
+        "add"
+       ]
+      ],
+      "tenant": "absent"
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 0,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 0,
+      "sets": [
+       {
+        "rtype": 0,
+        "count": 1,
+        "caps": null
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 1,
+      "blueprint": 0,
+      "setIndex": 0,
+      "assignment": 1,
+      "status": "bound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alDeleteIds": {
+       "ids": [
+        {
+         "id": {
+          "k": 0
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "remove"
+        ],
+        [
+         1,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 4,
+   "action": {
+    "cmd": {
+     "alBind": {
+      "assignment": 1,
+      "ops": [
+       [
+        0,
+        "remove"
+       ],
+       [
+        1,
+        "add"
+       ]
+      ],
+      "tenant": "absent"
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "caps": [
+         0
+        ],
+        "count": 2,
+        "rtype": 1
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 0,
+      "sets": [
+       {
+        "caps": null,
+        "count": 1,
+        "rtype": 0
+       }
+      ]
+     }
+    ],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [
+     {
+      "id": 0,
+      "name": 1,
+      "sets": [
+       {
+        "rtype": 1,
+        "count": 2,
+        "caps": [
+         0
+        ]
+       }
+      ]
+     },
+     {
+      "id": 1,
+      "name": 0,
+      "sets": [
+       {
+        "rtype": 0,
+        "count": 1,
+        "caps": null
+       }
+      ]
+     }
+    ],
+    "allocations": [
+     {
+      "id": 1,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": 1,
+      "status": "bound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alCreate": {
+       "blueprint": 1
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "bpDelete": {
+       "id": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alDeleteIds": {
+       "ids": [
+        {
+         "id": {
+          "k": 0
+         }
+        }
+       ]
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "alBind": {
+       "assignment": 1,
+       "ops": [
+        [
+         0,
+         "remove"
+        ],
+        [
+         1,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 4,
+   "action": {
+    "cmd": {
+     "alBind": {
+      "assignment": 1,
+      "ops": [
+       [
+        0,
+        "remove"
+       ],
+       [
+        1,
+        "add"
+       ]
+      ],
+      "tenant": "absent"
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "error": {
+      "category": "not_found"
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [
+     {
+      "assignment": null,
+      "blueprint": 1,
+      "id": 1,
+      "setIndex": 0,
+      "status": "unbound",
+      "tenant": "null"
+     }
+    ],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [],
+    "schema": null,
+    "tags": [],
+    "units": []
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [
+     {
+      "id": 1,
+      "blueprint": 1,
+      "setIndex": 0,
+      "assignment": 1,
+      "status": "bound",
+      "tenant": "null"
+     }
+    ],
+    "units": [],
+    "ledger": [],
+    "modules": [],
+    "tags": [],
+    "schema": null
+   }
+  }
+ ]
+}

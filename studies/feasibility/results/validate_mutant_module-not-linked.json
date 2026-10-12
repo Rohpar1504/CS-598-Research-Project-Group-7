@@ -1,0 +1,807 @@
+{
+ "target": "mutant_module-not-linked",
+ "traces": 528,
+ "steps": 5689,
+ "seconds": 116.6,
+ "traces_with_mismatch": 51,
+ "mismatch_kinds": [
+  [
+   "modCreate observation: .units[].modules length 1 vs 0",
+   51
+  ]
+ ],
+ "property_violations_on_code": [
+  [
+   "a unit lists exactly the modules attached to it",
+   164
+  ],
+  [
+   "[extra] every allocation's blueprint still exists",
+   29
+  ]
+ ],
+ "examples": [
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 1,
+       "firmware": "absent",
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 1,
+   "action": {
+    "cmd": {
+     "modCreate": {
+      "ctype": 1,
+      "firmware": "absent",
+      "unit": 0
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "module": {
+      "m": {
+       "ctype": 1,
+       "firmware": null,
+       "id": 0,
+       "unit": 0
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 1,
+       "firmware": null
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 1,
+      "firmware": null,
+      "id": 0,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 1,
+      "firmware": null
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 1,
+   "action": {
+    "cmd": {
+     "modCreate": {
+      "ctype": 0,
+      "firmware": {
+       "image": {
+        "i": 0
+       }
+      },
+      "unit": 0
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "module": {
+      "m": {
+       "ctype": 0,
+       "firmware": 0,
+       "id": 0,
+       "unit": 0
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 0,
+       "firmware": 0
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 0,
+      "firmware": 0,
+      "id": 0,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 0,
+      "firmware": 0
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 1,
+       "firmware": "absent",
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 2,
+   "action": {
+    "cmd": {
+     "modCreate": {
+      "ctype": 1,
+      "firmware": "absent",
+      "unit": 0
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "module": {
+      "m": {
+       "ctype": 1,
+       "firmware": null,
+       "id": 0,
+       "unit": 0
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 1,
+       "firmware": null
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 1,
+      "firmware": null,
+      "id": 0,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     },
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 1,
+      "modules": [],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     },
+     {
+      "id": 1,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 1,
+      "firmware": null
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 1,
+   "action": {
+    "cmd": {
+     "modCreate": {
+      "ctype": 0,
+      "firmware": {
+       "image": {
+        "i": 0
+       }
+      },
+      "unit": 0
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "module": {
+      "m": {
+       "ctype": 0,
+       "firmware": 0,
+       "id": 0,
+       "unit": 0
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 0,
+       "firmware": 0
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 0,
+      "firmware": 0,
+      "id": 0,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 0,
+      "firmware": 0
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  },
+  {
+   "trace": [
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    },
+    {
+     "cmd": {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     "ctx": {
+      "rev": "omitted",
+      "role": null,
+      "rules": false,
+      "scope": "omitted"
+     }
+    }
+   ],
+   "step": 2,
+   "action": {
+    "cmd": {
+     "modCreate": {
+      "ctype": 0,
+      "firmware": {
+       "image": {
+        "i": 0
+       }
+      },
+      "unit": 0
+     }
+    },
+    "ctx": {
+     "rev": "omitted",
+     "role": null,
+     "rules": false,
+     "scope": "omitted"
+    }
+   },
+   "expected_out": {
+    "body": {
+     "module": {
+      "m": {
+       "ctype": 0,
+       "firmware": 0,
+       "id": 0,
+       "unit": 0
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "real_out": {
+    "body": {
+     "module": {
+      "m": {
+       "id": 0,
+       "unit": 0,
+       "ctype": 0,
+       "firmware": 0
+      }
+     }
+    },
+    "revision": "1.0"
+   },
+   "expected_obs": {
+    "allocations": [],
+    "blueprints": [],
+    "ledger": [],
+    "modules": [
+     {
+      "ctype": 0,
+      "firmware": 0,
+      "id": 0,
+      "unit": 0
+     }
+    ],
+    "schema": null,
+    "tags": [],
+    "units": [
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 0,
+      "modules": [
+       0
+      ],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     },
+     {
+      "capacity": 1,
+      "caps": [],
+      "category": 0,
+      "host": 0,
+      "id": 1,
+      "modules": [],
+      "parent": null,
+      "reservedCapacity": 0,
+      "status": "active"
+     }
+    ]
+   },
+   "real_obs": {
+    "blueprints": [],
+    "allocations": [],
+    "units": [
+     {
+      "id": 0,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     },
+     {
+      "id": 1,
+      "category": 0,
+      "host": 0,
+      "capacity": 1,
+      "parent": null,
+      "caps": [],
+      "status": "active",
+      "reservedCapacity": 0,
+      "modules": []
+     }
+    ],
+    "ledger": [],
+    "modules": [
+     {
+      "id": 0,
+      "unit": 0,
+      "ctype": 0,
+      "firmware": 0
+     }
+    ],
+    "tags": [],
+    "schema": null
+   }
+  }
+ ]
+}

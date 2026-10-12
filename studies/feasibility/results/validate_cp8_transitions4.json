@@ -1,0 +1,19 @@
+{
+ "target": "cp8",
+ "traces": 2072,
+ "steps": 9090,
+ "seconds": 250.6,
+ "traces_with_mismatch": 0,
+ "mismatch_kinds": [],
+ "property_violations_on_code": [
+  [
+   "[extra] every allocation's blueprint still exists",
+   600
+  ],
+  [
+   "[extra] binding never moves an allocation that is bound to another assignment",
+   22
+  ]
+ ],
+ "examples": []
+}
