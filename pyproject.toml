@@ -1,0 +1,19 @@
+[project]
+name = "lean-companion"
+version = "0.1.0"
+description = "A Lean companion for vibe coding: checks an agent's code against the constraints the developer stated, through an executable Lean model."
+requires-python = ">=3.12"   # sys.monitoring, used to record which lines each run executes
+dependencies = []
+
+[project.scripts]
+companion = "companion.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["companion*"]
+
+[tool.setuptools.package-data]
+companion = ["prompts/*.md"]

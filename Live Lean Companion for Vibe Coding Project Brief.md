@@ -1,6 +1,6 @@
 # Live Lean Companion for Vibe Coding: Project Brief
 
-Oct 12, 2026
+Oct 13, 2026
 
 ## The project in short
 
@@ -24,7 +24,7 @@ The four stages of the proposal stand. What changed is how stage 2 is done, and 
 
 1. **Constraint extraction.** Constraints from the conversation become Lean predicates, kept in a ledger with where each was said and its status (proposed, confirmed, superseded or retired). Uncertain ones are confirmed with the developer through a concrete example.
 2. **Model maintenance.** An LLM writes and repairs the Lean model and the adapter. **Trace validation** runs the same action sequences on the code and the model and compares outputs and states; a mismatch triggers repair. This replaces the term "conformance replay" from the proposal.
-3. **Checking.** Exhaustive search over short action sequences in a small scope, plus attempts to prove that each action preserves each constraint, which then holds for sequences of any length.
+3. **Checking.** Exhaustive search over short action sequences in a small scope, plus attempts to prove that each action preserves each constraint, which then holds for sequences of any length. A constraint counts as checked only if the search reaches the situation it is about.
 4. **Feedback.** A violating sequence is replayed on the real code. If it reproduces, it goes to the agent, unless the developer's latest request may have changed the constraint, in which case the developer is asked (triage: regression or change of mind).
 
 Decisions made since the proposal:
@@ -33,6 +33,8 @@ Decisions made since the proposal:
 - **The companion runs after each agent turn, not each edit.** In the middle of a turn the code is legitimately half-changed.
 - **Each constraint gets an evidence level:** proved, checked to depth k, violated with a reproduction, or not checked. The answer to the proposal's question, "how can we gain confidence that vibe-coded software does what the developer asked for?", is this ledger with evidence, not only the regressions caught.
 - **Traces for validation are chosen by transition coverage,** not at random (see the prototype below).
+- **Changed code that no validation trace reaches also triggers repair.** Trace validation cannot see a command the model does not know, so a new feature would otherwise go unmodeled.
+- **Each constraint records its situation:** when it could be broken. Search must reach that situation before the constraint is reported checked; otherwise the LLM widens the search areas.
 
 ## Where we are
 
@@ -82,6 +84,41 @@ The model and adapter were written by hand, by Claude with the spec and code.
   - Random validation traces missed 4 of 10 seeded bugs, because those bugs need setup first. Transition coverage caught all 10, so trace selection matters.
   - The adapter is about 60% of the model's size, held most of the subtle problems, and is trusted. It needs as much care as the model.
 
+### LLM-written models: synthesis and repair
+
+Claude Haiku 5.5, at low effort, writes the model and adapter of forge from its code alone, and keeps them in step with the code. Write-up: [docs/synthesis-and-repair.md](docs/synthesis-and-repair.md).
+
+- **Synthesis works.**
+  - **Standalone run.** 9 minutes, $0.29. Graded independently: 0 mismatching traces out of 3,181, 28 of 29 commands covered, and 7 of 10 seeded bugs noticed. The three misses are in features it left out.
+  - **The tool's own `synthesize`.** 30 minutes, $0.67. 0 mismatches on 995 traces.
+- **Repair works.** Two edits were run live:
+  - **A new command, with a bug.** Validation still passed, but the unreached changed code made the companion call the agent. The agent added the command to the model (83 s, $0.03), and search then found the broken constraint.
+  - **A dropped check.** 14 traces disagreed. The agent fixed the model (19 s, $0.01), and the broken constraint was reported with a reproduction.
+
+  In both cases the agent modeled the bug, as instructed, and the constraint check caught it.
+- **A hole, found and closed.** Two constraints the code breaks were reported "checked", because the LLM's search areas never reached the situations they are about. Constraints now carry their situation, and an unreached one is reported unchecked and sent to the agent. After the agent widened the areas (66 s, $0.02), all three live constraints were correctly reported violated.
+
+### The tool
+
+`companion` (Python, plus the Lean core) runs the whole loop. A test suite specifies its behavior on the real forge program, with stand-ins for the LLM. Commands:
+
+- `new` and `synthesize`: a workspace per application, and its LLM-written model and adapter.
+- `extract`: developer messages become ledger entries, each with a predicate and a situation, typechecked in Lean, with one LLM repair round.
+- `check`:
+  1. trace validation with transition coverage, cached by which code each trace ran (about 3 s per turn after an edit);
+  2. repair of the model when it has fallen behind;
+  3. search per area, with each violation replayed on the real program;
+  4. evidence for each constraint.
+- `hook`: the Claude Code `UserPromptSubmit` and `Stop` hooks. `Stop` blocks the agent, at most once per turn, with reproductions of broken constraints.
+
+Not built yet:
+- triage of a change of mind (only "stated this turn" versus "regression");
+- confirmation questions;
+- proofs in the loop;
+- the PBT side-car.
+
+The hooks have not yet been run in a live Claude Code session.
+
 ## Evaluation
 
 The full plan is in [docs/evaluation.md](docs/evaluation.md). The evaluation as submitted had problems. Each is now resolved:
@@ -117,7 +154,7 @@ Two statuses: **wanted** means we want it, at the date given; **proposed** means
 
 - **Report 1.** Present the design, the preliminary study and the forge prototype.
 - **Second labeler for the preliminary study.** Someone other than the first labeler labels 40–50 of the requirements in `studies/preliminary/labels.csv`, blind, so agreement (Cohen's kappa) can be reported. Until then the study's numbers rest on one labeler.
-- **LLM-written model and adapter.** Claude reads the forge app's code alone and writes the Lean model and the adapter, loops on `lake build` errors, and repairs from trace-validation mismatches. The result is compared with the hand-built model. This is the biggest open question. Needs: API access (no key or SDK is set up yet).
+- **LLM-written model and adapter.** Done for forge, with Haiku at low effort; see above. Still open: other applications, stronger models, and repeated runs to measure variance.
 - **Constraint extraction (RQ1).** A simulated developer delivers forge's checkpoints as conversation, and the extracted constraints are scored against ground-truth annotations. Needs: the annotations, written by someone who is not building extraction, and API access.
 - **Agent baseline runs.** Sonnet and Haiku, with no side-car, on the stateful tasks: SlopCodeBench's forge, dynamic_config_service_api and trajectory_api, through its native runner; EvoCode-Bench's lsm-kvstore-engine, multiservice-deploy-pipeline, mlpipe-orchestrator and mlops-inference-gateway. The code is saved after every round. This gives the regression rates and the corpus of real regressions. Needs: Docker, Harbor, Go, and an agreed API budget.
 - **PBT baseline.** Hypothesis stateful testing, driven through the same adapter and checking the same compiled predicates. Needs: `hypothesis` installed.
@@ -126,7 +163,7 @@ Two statuses: **wanted** means we want it, at the date given; **proposed** means
 
 - **Oct 30, report 2:** open. Its earlier items moved to Oct 14.
 - **By Nov 18, report 3:**
-  - the Claude Code loop: hooks, feedback to the agent, and triage;
+  - the Claude Code loop: triage, and the hooks and feedback to the agent (built) tried in live sessions;
   - models for two or three more apps;
   - Study A (controlled detection on seeded and mined bugs);
   - Study B (end-to-end sessions).
@@ -134,14 +171,8 @@ Two statuses: **wanted** means we want it, at the date given; **proposed** means
 
 ### Proposed, not decided
 
-- **Build the tool as commands first, in risk order.**
-  1. `companion synthesize`: the LLM writes the model and adapter.
-  2. `companion extract`: messages become ledger entries.
-  3. `companion check`: trace validation with transition coverage, search, replay on the code, and a report.
-  4. Thin Claude Code hooks that call these.
-
-  Each is testable on forge without running agent sessions.
-- **Skip for now** the things the evaluation does not need: plugin packaging, a background daemon, caching, change-impact analysis, `/constraints`, and the confirmation dialog.
+- **Skip for now** the things the evaluation does not need: plugin packaging, a background daemon, `/constraints`, and the confirmation dialog. (The tool's commands, caching and the detection of unreached changed code are built.)
+- **A first live Claude Code session** with the hooks, on forge, to see the loop with a real coding agent before the benchmark runs.
 - **Split of work.** Ground truth should not come from whoever builds extraction. So one of us takes the work that is independent of the tool: the second labels, the ground-truth annotations, the agent baseline runs and the PBT baseline. The other takes model synthesis and extraction.
 - **Our own scenarios:** multi-turn sessions built on existing apps, such as BaxBench's access-control backends, if the external benchmarks give too little.
 - **Adapter hardening:**
@@ -151,7 +182,8 @@ Two statuses: **wanted** means we want it, at the date given; **proposed** means
 
 ## Open questions and risks
 
-- **Can an LLM write the model and adapter well?** Everything so far used hand-written ones.
+- **Can an LLM write the model and adapter well?** For forge, yes, even with Haiku (see above). Other applications, especially non-Python ones, are untested.
+- **How specific are the extracted situations?** A constraint is only as well checked as its situation is specific: a vague one is reached easily and hides a narrow search. This is part of RQ1.
 - **The adapter is trusted and large.** Its errors can hide real differences. It needs its own checks, and shared code across apps.
 - **Strong agents rarely regress,** so RQ3 may show a small effect with Sonnet.
 - **PBT may detect as much.** The contribution then rests on the ledger, evidence levels and triage.
@@ -191,4 +223,5 @@ Each piece of the companion has a neighbour. No published work puts them togethe
 | [docs/evaluation.md](docs/evaluation.md) | The evaluation plan |
 | [docs/preliminary-study.md](docs/preliminary-study.md) | What regressions agents make (EvoCode-Bench) |
 | [docs/feasibility-study.md](docs/feasibility-study.md) | The forge prototype and its results |
+| [docs/synthesis-and-repair.md](docs/synthesis-and-repair.md) | LLM-written models: synthesis, repair, and situations |
 | CS_598_…pdf | The submitted proposal. The evaluation and stage 2 in it are superseded by this brief. |

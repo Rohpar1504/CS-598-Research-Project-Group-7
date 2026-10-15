@@ -2,3 +2,4 @@
 # (canary strings), so it stays out of the repository. See studies/*/fetch_data.sh.
 data/
 __pycache__/
+.companion/

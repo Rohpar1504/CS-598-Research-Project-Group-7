@@ -1,0 +1,16 @@
+{
+  "app": "forge",
+  "root": "../..",
+  "lean_dir": "lean",
+  "ledger_module": "Forge.Ledger",
+  "ledger_file": "lean/Forge/Ledger.lean",
+  "lean_header": "import Forge.Props\n\nnamespace Forge\n\nopen Companion",
+  "lean_footer": "end Forge",
+  "property_type": "Companion.Property Action Out Obs",
+  "exe": "forge-companion",
+  "adapter": "companion.adapters.forge:ForgeAdapter",
+  "program": "data/scb-problems/forge/solutions/checkpoint_8/forge",
+  "state_dir": ".companion/forge",
+  "vocabulary": ["lean/Forge/Model.lean", "lean/Forge/Props.lean"],
+  "check": {"transition_depth": 4, "random_traces": 200, "random_seed": 598, "search_depth": 8}
+}

@@ -62,4 +62,9 @@ def stepOf : String → Option (State → Action → State × Out)
   | "flash-any-image" => some (stepWith runFlashAnyImage)
   | _ => none
 
+/-- The variants by name, for the executables' `replay VARIANT` and `check ... VARIANT`. -/
+def variants : List (String × (State → Action → State × Out)) :=
+  ["bind-no-duplicate-guard", "delete-names-partial", "flash-any-image"].filterMap fun v =>
+    (stepOf v).map (v, ·)
+
 end Forge

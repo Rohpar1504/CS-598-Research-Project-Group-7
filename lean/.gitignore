@@ -1,1 +1,3 @@
 .lake/
+# Generated per session by the companion from its constraint ledger.
+Forge/Ledger.lean

@@ -1,0 +1,165 @@
+{
+ "turn": 8,
+ "entries": [
+  {
+   "id": "c1",
+   "text": "A blueprint name can only be used once.",
+   "predicate": "fun t =>\n  let names := t.after.blueprints.map (\u00b7.name)\n  names.eraseDups.length == names.length",
+   "kind": "state",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 1,
+     "quote": "blueprint names have to be unique"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c2",
+   "text": "Allocating from a blueprint gives two allocations per TYPE_A requirement set and one per other set.",
+   "predicate": "fun t =>\n  match t.action.cmd, t.out.body with\n  | .alCreate n, .allocations as =>\n    match t.before.blueprints.find? (\u00b7.name == n) with\n    | some b => as.length == (b.sets.map multiplicity).sum\n    | none => false\n  | _, _ => true",
+   "kind": "transition",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 2,
+     "quote": "a TYPE_A set should give two allocations, everything else one"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c3",
+   "text": "A bind that adds to an assignment only succeeds if nothing is bound to it yet.",
+   "predicate": "fun t =>\n  match t.action.cmd, t.out.body with\n  | .alBind a ops _, .accepted =>\n    !ops.any (\u00b7.2 == .add) || !t.before.allocations.any (fun al => al.status == \"bound\" && al.assignment == some a)\n  | _, _ => true",
+   "kind": "transition",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 3,
+     "quote": "once an assignment has allocations bound you can't bind more to it"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c4",
+   "text": "A rejected request changes nothing.",
+   "predicate": "fun t => !t.out.body.isError || t.after == t.before",
+   "kind": "transition",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 3,
+     "quote": "if a bind or a delete fails, nothing should have changed"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c5",
+   "text": "An allocation is bound exactly when it has an assignment.",
+   "predicate": "fun t => t.after.allocations.all fun a => (a.status == \"bound\") == a.assignment.isSome",
+   "kind": "state",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 3,
+     "quote": "bound means it has an assignment, unbound means it doesn't"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c6",
+   "text": "The ledger lists exactly the capabilities of the active units.",
+   "predicate": "fun t => t.after.ledger == ((t.after.units.filter (\u00b7.status == \"active\")).flatMap (\u00b7.caps)).eraseDups.mergeSort",
+   "kind": "state",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 5,
+     "quote": "the ledger should show what the active units can do, nothing more"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c7",
+   "text": "A module has at most one tag per key.",
+   "predicate": "fun t =>\n  let keys := t.after.tags.map fun g => (g.module, g.key)\n  keys.eraseDups.length == keys.length",
+   "kind": "state",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 6,
+     "quote": "one tag per key on a module"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c8",
+   "text": "Blueprint create and delete never succeed in system scope.",
+   "predicate": "fun t => !(t.action.cmd.isBlueprintWrite && t.action.ctx.scope == .system) || t.out.body.isError",
+   "kind": "transition",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 8,
+     "quote": "system scope must never create or delete blueprints"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c9",
+   "text": "Every allocation's blueprint still exists.",
+   "predicate": "fun t => t.after.allocations.all fun a => t.after.blueprints.any (\u00b7.name == a.blueprint)",
+   "kind": "state",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 3,
+     "quote": "don't let a blueprint be deleted while allocations still use it"
+    }
+   ],
+   "history": [],
+   "error": null
+  },
+  {
+   "id": "c10",
+   "text": "Binding never moves an allocation that is bound to another assignment.",
+   "predicate": "fun t =>\n  match t.action.cmd, t.out.body with\n  | .alBind a ops _, .accepted =>\n    ops.all fun (id, op) => op != .add ||\n      (t.before.allocations.find? (\u00b7.id == id)).all fun al => al.status != \"bound\" || al.assignment == some a\n  | _, _ => true",
+   "kind": "transition",
+   "status": "confirmed",
+   "confidence": "high",
+   "provenance": [
+    {
+     "turn": 3,
+     "quote": "binding should never steal an allocation from another assignment"
+    }
+   ],
+   "history": [],
+   "error": null
+  }
+ ]
+}

@@ -1,0 +1,14 @@
+name = "app"
+defaultTargets = ["app-model"]
+
+[[lean_lib]]
+name = "Companion"
+globs = ["Companion.+"]
+
+[[lean_lib]]
+name = "App"
+globs = ["App.+"]
+
+[[lean_exe]]
+name = "app-model"
+root = "App.Main"

@@ -1,6 +1,6 @@
 # Lean Companion: Design
 
-Oct 12, 2026. The design is settled. This document is the reference for how the tool works. Where the project stands, and what comes next, is in the project brief.
+Oct 13, 2026. The design is settled. This document is the reference for how the tool works. Where the project stands, and what comes next, is in the project brief.
 
 Decided:
 
@@ -9,7 +9,7 @@ Decided:
 - The companion runs once per agent turn.
 - The companion does not depend on the application's language.
 
-The evaluation is in [evaluation.md](evaluation.md). The forge prototype that tested this design is in [feasibility-study.md](feasibility-study.md).
+The evaluation is in [evaluation.md](evaluation.md). The forge prototype that tested this design is in [feasibility-study.md](feasibility-study.md), and the LLM-written models in [synthesis-and-repair.md](synthesis-and-repair.md).
 
 ## 1. Goal and scope
 
@@ -62,8 +62,8 @@ All of these are checked in Lean, in the same way. A constraint about outputs is
 | **Model** | `step : State → Action → State × Out`, written by an LLM, following what the code does. A rejected request is an output (an error), not a failure of the model, because many constraints are about which requests are rejected. |
 | **Adapter** | γ maps an abstract action to a real call. Abstract input classes, such as `valid`, `emptyName` or `wrongType`, map to concrete payloads. α maps the real state to a `State` by calling the observation interface, and maps real outputs to `Out`. The adapter keeps a map between abstract IDs and real IDs. |
 | **Property** | A decidable Lean predicate over an observation. The observation can be a `State`, a transition `(State, Action, Out, State)`. Because the predicate is decidable, it can be evaluated on the model and on observed real runs alike. |
-| **Ledger entry** | id, text, predicate, kind, provenance (quotes and turn numbers), status (proposed, confirmed, superseded or retired), confidence, assurance level. |
-| **Assurance level** | `proved`: proved preserved by every action, and the model passes trace validation. `bounded(k)`: no violation within depth k. `violated`: a reproduced trace exists. `unobservable`: α cannot see the state the property refers to. `unchecked`: the model is broken or the time budget ran out. |
+| **Ledger entry** | id, text, predicate, kind, provenance (quotes and turn numbers), status (proposed, confirmed, superseded or retired), confidence, assurance level, and its **situation**: the circumstance in which it could be broken (for "when X, then Y", it is X), as text and as a predicate on transitions. |
+| **Assurance level** | `proved`: proved preserved by every action, and the model passes trace validation. `bounded(k)`: no violation within depth k. `violated`: a reproduced trace exists. `unobservable`: α cannot see the state the property refers to. `unchecked`: the model is broken, the time budget ran out, or the search never reaches the entry's situation. |
 
 Why the model follows the code while the properties follow the developer. The FuzzMo paper calls these code-based and ideal-based models. A conversation leaves most behavior unspecified. An ideal model would have to fill in those details, and every design choice the agent made would then show up as a mismatch. A model that follows the code absorbs those choices. Only the properties the developer actually stated are held fixed. A violation therefore means the code does something the developer said it must not.
 
@@ -95,10 +95,10 @@ agent turn ends ──► [2 change impact] ──► [3 trace validation + repa
 ```
 
 1. **Ledger update**, on each developer message. Add, revise or retire entries, with provenance. If confidence is low, put a confirmation question in a queue (§8).
-2. **Change impact.** Find which actions are affected by this turn's diff. Each action's code footprint comes from coverage recorded during trace validation. An action is out of date when the diff touches its footprint. New actions are always out of date.
-3. **Trace validation.** Run traces for the out-of-date actions, chosen by **transition coverage**: a shortest path to every reachable state in the search scope, extended by every action. Add random longer traces and earlier traces for those actions. On a mismatch, the LLM repairs the model or the adapter, then the replay runs again. The budget is N rounds. After that, actions that still do not conform are marked, and every property that depends on them becomes `unchecked`.
+2. **Change impact.** Find what this turn's diff affects. Each validation trace's code footprint is recorded during trace validation, and a trace is rerun only when the diff touches a function it executed. Changed statements that no trace executes, such as a new command, mean the model may not cover the new behavior: they go to repair in step 3 even if validation passes.
+3. **Trace validation.** Traces are chosen by **transition coverage**: a shortest path to every reachable state in the search scope, extended by every action. Random longer traces and earlier traces on which the model was wrong are added. On a mismatch, or on unreached changed code, the LLM repairs the model or the adapter, then validation runs again. The budget is N rounds. If the model still does not conform, every property becomes `unchecked`.
 4. **Check and prove.**
-   - BFS to depth k, for all active properties.
+   - BFS to depth k, for all active properties, and for each entry's situation. An entry whose situation no area reaches is `unchecked`, and the LLM widens the areas, once per version of the entry.
    - Proof attempts for each pair of property and action. A pair is skipped if a cached proof is still valid, meaning neither the model's code for that action nor the predicate has changed.
 5. **Replay on the code.** Each counterexample from the model is run on the real code in a fresh sandbox.
    - Violated on the code: the violation is real.
@@ -130,7 +130,9 @@ The same mechanism serves the agent. If the agent believes a reported constraint
   - Time is an abstract action `advance(n)`. It is carried out through the application's own clock setting if it has one, otherwise through `libfaketime`.
   - IDs from the application go through the ID map.
   - If time cannot be controlled, time-dependent properties are marked `unobservable`.
-- **Structure.** One Lean definition per action, so proofs and caching work per action. Generated code goes in `.companion/lean/Apps/<app>/`.
+- **Structure.** One Lean definition per action, so proofs and caching work per action.
+- **How the LLM works.** It runs as an agent (Claude Code headless, with file and shell tools) in the application's workspace (§9). It reads the program's code and runs trace validation itself until there are no mismatches. Its tasks are in `companion/prompts/`. Both tasks say to follow the code even where it looks wrong, because the developer's intent is in the properties. The repair task gives it the code's diff since the model last matched, the disagreeing traces, the unreached changed statements, unreached situations, and the ledger's predicates, whose names it must keep.
+- **After a repair.** Predicates that no longer typecheck get one LLM repair round, and predicates that could not be formalized before are retried. A repair that leaves a model that does not build is undone.
 
 ## 7. Checking and proving
 
@@ -141,7 +143,7 @@ The same mechanism serves the agent. If the agent believes a reported constraint
 - **Proofs.** For each pair of property and action, the goal is `P s → step s a = .ok (s', o) → P s'`. The LLM writes the proof, mostly using `grind`, `simp` and `omega`, under a time budget per goal.
   - If the proof fails and BFS also finds no counterexample, the property may be true but not inductive. The LLM proposes a stronger auxiliary invariant, which is itself checked by BFS before use.
   - If that also fails, the level is `bounded(k)`.
-- **Vacuity check.** For a property of the form `A → B`, BFS must find a reachable state where `A` holds. Otherwise the property is reported as vacuous at this scope. A constraint that is never exercised gives false confidence.
+- **Vacuity check.** A constraint that is never exercised gives false confidence. So each ledger entry names its situation, as a predicate on transitions, and the situation is compiled into a probe property that fails exactly where it occurs. BFS's counterexample to the probe is a shortest trace that reaches the situation. If no area reaches it, the entry is `unchecked`, not checked, and the LLM is asked to widen the areas. In the first live run, without this check, two constraints the code breaks were reported checked (synthesis-and-repair.md).
 
 ## 8. How developer and agent interact with it
 
@@ -165,25 +167,30 @@ The companion ships as a Claude Code plugin:
 
 A background daemon per session keeps the Lean build and the caches warm, so the `Stop` hook only waits for the check itself. The design does not depend on the coding agent: a different agent needs only new hook bindings.
 
-```
-.companion/                in the user's project
-  ledger.json
-  lean/                    Lake project: Companion core + Apps/<app>/{Schema,Model,Props,Proofs}
-  adapter/                 γ, α, ID map, value classes
-  traces/                  validation traces, confirmed counterexamples (regression suite)
-  report.json              assurance per entry, coverage, history
+Built so far (the plugin packaging, slash commands, MCP server and daemon are not):
 
-companion/                 this repository: Python package (planned layout; lean.py,
-                           trace_validation.py and adapters/forge.py exist today)
-  daemon.py hooks.py mcp.py
-  ledger.py                stage 1
-  impact.py conform.py synth.py      stage 2
-  check.py prove.py        stage 3
-  replay.py triage.py      stage 4
-  pbt.py                   PBT side-car baseline (Hypothesis, same adapter and predicates)
-lean/Companion/            generic Lean core: Model, BFS, replay, trace selection, JSON I/O
-bench/                     runners for SlopCodeBench, EvoCode-Bench and our own scenarios
 ```
+WS/                        an application's workspace (companion new)
+  companion.json           program, Lean namespace, check and agent settings
+  lean/                    Lake project: Companion core (copied), <NS>.lean and <NS>/ (the
+                           LLM-written model), Ledger.lean (generated), Main.lean and
+                           ModelMain.lean (executables with and without the ledger)
+  adapter.py               γ, α, ID map (LLM-written)
+  validate.py              trace validation, for the LLM to run
+  state/                   ledger, messages, report, validation cache, the code at the last
+                           match (for change impact), extra validation traces, agent logs
+
+companion/                 this repository: Python package
+  hooks.py                 Claude Code hooks
+  ledger.py extract.py     stage 1
+  workspace.py sync.py coverage.py validation_cache.py trace_validation.py runner.py
+                           stage 2: synthesis, repair, change impact, trace validation
+  check.py                 stages 3 and 4: search, replay on the code, evidence
+  llm.py prompts/          LLM backends and the agent's tasks
+lean/Companion/            generic Lean core: Model, BFS, replay, trace selection, JSON I/O
+```
+
+Planned: `prove.py`, `triage.py`, `pbt.py` (the PBT side-car, with the same adapter and predicates), and runners for the benchmarks.
 
 The generic Lean interface, as implemented in `lean/Companion/Core.lean`:
 
@@ -209,8 +216,8 @@ The core is what the evaluation needs. The extensions are what makes it a tool.
 | Milestone | Tool | Evidence |
 | --- | --- | --- |
 | Oct 14 (report 1) | **Done:** Lean core (`Model`, BFS, replay, trace selection, `eval`). A hand-built model and adapter for the whole forge app, 16 properties and 7 proofs. | **Done:** feasibility ([feasibility-study.md](feasibility-study.md)) and the preliminary study ([preliminary-study.md](preliminary-study.md)). |
-| Oct 30 (report 2) | LLM synthesis and repair of the model and adapter. Ledger extraction. Hooks and the `Stop` feedback loop. PBT side-car. | LLM-written model against the hand-built one. Agent baseline runs. Study A (controlled detection) started. First RQ1 numbers. |
-| Nov 18 (report 3) | Proof attempts and auxiliary invariants, triage, vacuity, change impact, the assurance report. | Study B (end-to-end sessions), RQ4 escapes, RQ5 overhead. |
+| Oct 30 (report 2) | **Done early:** LLM synthesis and repair of the model and adapter, change impact, situations (vacuity), ledger extraction, hooks and the `Stop` feedback loop. Still to do: PBT side-car. | LLM-written model against the hand-built one. Agent baseline runs. Study A (controlled detection) started. First RQ1 numbers. |
+| Nov 18 (report 3) | Proof attempts and auxiliary invariants, triage, the assurance report. | Study B (end-to-end sessions), RQ4 escapes, RQ5 overhead. |
 | Dec 9 (final) | Confirmation questions, dispute tool, `/constraints`. | Our own scenarios if time allows. Write-up. |
 
 Confirmation questions come last on purpose. In the evaluation, the simulated developer only needs to answer them, so building the full interaction can wait.

@@ -230,10 +230,10 @@ The search areas are small: 11 to 1,713 states at depth 8, each searched in unde
 
 ## Not tested yet
 
-- **An LLM writing the model and adapter from the code.** Here they were written by Claude in conversation, with the spec and code in hand. The automated synthesis-and-repair loop doesn't exist yet, and this is now the largest open question.
+- **An LLM writing the model and adapter from the code.** Here they were written by Claude in conversation, with the spec and code in hand. Since tested: see [synthesis-and-repair.md](synthesis-and-repair.md).
 - **Code written by an agent,** as opposed to the reference solutions.
 - **A non-Python application.** The EvoCode-Bench key-value store needs Go, which is not installed here.
-- **Constraint extraction and the Claude Code hooks.**
+- **Constraint extraction and the Claude Code hooks.** Since built (see the README); not yet evaluated.
 
 ## Reproducing
 

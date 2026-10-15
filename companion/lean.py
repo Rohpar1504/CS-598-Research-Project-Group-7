@@ -30,8 +30,19 @@ class LeanModel:
         """{"initial": obs, "steps": [{"out": ..., "obs": ...}, ...]}"""
         return self._run("replay", self.variant, payload=trace)
 
-    def check(self, depth: int) -> list:
-        return self._run("check", str(depth), self.variant)
+    def replay_many(self, traces: list) -> list[dict]:
+        """`replay` for many traces in one call."""
+        return self._run("replay-many", self.variant, payload=traces)
+
+    def areas(self) -> list[str]:
+        return self._run("areas")
+
+    def properties(self) -> list[str]:
+        return self._run("properties")
+
+    def check(self, area: str, depth: int) -> list:
+        """Search one area for violations of every property: one result per property."""
+        return self._run("check", area, str(depth), self.variant)
 
     def eval(self, transitions: list) -> list[list[str]]:
         """Names of the properties each transition violates."""

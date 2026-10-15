@@ -21,7 +21,7 @@ from pathlib import Path
 
 from companion.adapters.forge import ForgeAdapter
 from companion.lean import LeanModel
-from companion.trace_validation import action_kind, random_traces, validate
+from companion.trace_validation import action_kind, default_workers, random_traces, transition_traces as _transition_traces, validate
 
 ROOT = Path(__file__).resolve().parents[2]
 EXE = ROOT / "lean" / ".lake" / "build" / "bin" / "forge-model"
@@ -29,6 +29,10 @@ SOLUTIONS = ROOT / "data" / "scb-problems" / "forge" / "solutions"
 MUTANTS = ROOT / "data" / "forge-mutants"
 RESULTS = Path(__file__).parent / "results"
 AREAS = ["alloc", "unit", "module", "access"]
+
+
+def transition_traces(model: LeanModel, depth: int) -> list:
+    return _transition_traces(model, AREAS, depth)
 
 
 def diff_paths(a, b, path="") -> list[str]:
@@ -66,14 +70,6 @@ def traces_for(model: LeanModel, n_paths: int, n_random: int, seed: int) -> list
     return traces
 
 
-def transition_traces(model: LeanModel, depth: int) -> list:
-    traces = []
-    for area in AREAS:
-        alphabet = model.alphabet(area)
-        for path in [[]] + model.paths(area, depth, 10**6):
-            traces += [path + [a] for a in alphabet]
-    return traces
-
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -84,7 +80,7 @@ def main() -> None:
     ap.add_argument("--paths", type=int, default=200)
     ap.add_argument("--random", type=int, default=400)
     ap.add_argument("--seed", type=int, default=598)
-    ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--workers", type=int, default=default_workers())
     args = ap.parse_args()
 
     model = LeanModel(EXE)

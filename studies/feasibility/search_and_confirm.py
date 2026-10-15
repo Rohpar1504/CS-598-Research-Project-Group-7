@@ -19,7 +19,7 @@ from pathlib import Path
 
 from companion.adapters.forge import ForgeAdapter
 from companion.lean import LeanModel
-from companion.trace_validation import validate, validate_trace
+from companion.trace_validation import default_workers, validate, validate_trace
 from studies.feasibility.validate import AREAS, traces_for
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -32,7 +32,7 @@ CASES = [("reference", REFERENCE), ("bind-no-duplicate-guard", None), ("delete-n
 
 
 def check(model: LeanModel, area: str, depth: int) -> list:
-    return model._run("check", area, str(depth), model.variant)
+    return model.check(area, depth)
 
 
 def main() -> None:
@@ -46,7 +46,8 @@ def main() -> None:
         model = LeanModel(EXE, variant=name)
         entry = {"case": name}
         if name != "reference":
-            results = validate(lambda: ForgeAdapter(program), model, traces_for(model, 200, 400, 598))
+            results = validate(lambda: ForgeAdapter(program), model, traces_for(model, 200, 400, 598),
+                               default_workers())
             entry["validation"] = {"traces": len(results),
                                    "mismatches": sum(1 for r in results if r.first_mismatch)}
         found, entry["search"] = [], {}

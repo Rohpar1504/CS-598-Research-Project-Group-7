@@ -5,10 +5,25 @@ defaultTargets = ["Companion", "Forge", "forge-model"]
 name = "Companion"
 globs = ["Companion.+"]
 
+# The forge app's model, properties and proofs. Forge.Ledger and Forge.CompanionMain are
+# left out: the ledger module is generated per session by the companion (companion/ledger.py),
+# which builds forge-companion itself.
 [[lean_lib]]
 name = "Forge"
-globs = ["Forge.+"]
+globs = ["Forge.Model", "Forge.Props", "Forge.Proofs", "Forge.Variants", "Forge.App", "Forge.Main"]
 
+# The generated ledger module, in its own library so that it is not a default target: a fresh
+# checkout has no Forge/Ledger.lean until the companion writes one.
+[[lean_lib]]
+name = "ForgeLedger"
+roots = ["Forge.Ledger"]
+
+# The feasibility study's executable: hand-written properties.
 [[lean_exe]]
 name = "forge-model"
 root = "Forge.Main"
+
+# The companion's executable: properties from the constraint ledger.
+[[lean_exe]]
+name = "forge-companion"
+root = "Forge.CompanionMain"
