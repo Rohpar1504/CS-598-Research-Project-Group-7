@@ -224,7 +224,7 @@ The search areas are small: 11 to 1,713 states at depth 8, each searched in unde
 - **Trace selection is the weak point of trace validation.**
   - Random traces missed 4 of 10 seeded bugs.
   - Transition coverage over the search areas caught all of them, at modest cost.
-  - The companion should select traces by transition coverage, and the evaluation should measure how many bugs slip past validation (RQ4).
+  - The companion should select traces by transition coverage, and the evaluation should track how many bugs slip past validation.
 - **Search finds what random traces miss.** In Part 1 that meant bugs random traces hit in 1 or 9 of 600 traces; in Part 2, four bugs they never hit. This is an early sign for RQ2, with the caveat that we seeded these bugs.
 - **Proofs work for the app's real guarantees.** Atomicity of rejected requests across every command, binding consistency, unique tag keys and access control were all proved, in about 70 lines. None needed an auxiliary invariant. Tag uniqueness needed hand-written list reasoning.
 

@@ -60,7 +60,7 @@ All of these are checked in Lean, in the same way. A constraint about outputs is
 | **Observation interface** | The read actions the application offers, such as `forge unit list`, `GET /v1/configs/x` or `SCAN`. Everything the companion knows about the real state comes through these. |
 | **Schema** | A Lean type for the observable state of the application, over small finite domains. It comes from the conversation and the spec (the nouns the developer uses) and changes rarely. |
 | **Model** | `step : State → Action → State × Out`, written by an LLM, following what the code does. A rejected request is an output (an error), not a failure of the model, because many constraints are about which requests are rejected. |
-| **Adapter** | γ maps an abstract action to a real call. Abstract input classes, such as `valid`, `emptyName` or `wrongType`, map to concrete payloads. α maps the real state to a `State` by calling the observation interface, and maps real outputs to `Out`. The adapter keeps a map between abstract IDs and real IDs. |
+| **Adapter** (the report's "test harness") | γ maps an abstract action to a real call. Abstract input classes, such as `valid`, `emptyName` or `wrongType`, map to concrete payloads. α maps the real state to a `State` by calling the observation interface, and maps real outputs to `Out`. The adapter keeps a map between abstract IDs and real IDs. |
 | **Property** | A decidable Lean predicate over an observation. The observation can be a `State`, a transition `(State, Action, Out, State)`. Because the predicate is decidable, it can be evaluated on the model and on observed real runs alike. |
 | **Ledger entry** | id, text, predicate, kind, provenance (quotes and turn numbers), status (proposed, confirmed, superseded or retired), confidence, assurance level, and its **situation**: the circumstance in which it could be broken (for "when X, then Y", it is X), as text and as a predicate on transitions. |
 | **Assurance level** | `proved`: proved preserved by every action, and the model passes trace validation. `bounded(k)`: no violation within depth k. `violated`: a reproduced trace exists. `unobservable`: α cannot see the state the property refers to. `unchecked`: the model is broken, the time budget ran out, or the search never reaches the entry's situation. |
@@ -78,7 +78,7 @@ When the companion says "constraint C is proved", that rests on the following ch
 The parts we trust are α and γ (small, generated and reviewed), the adapter's runtime, and the Lean kernel. The leftover risk has two measurable parts:
 
 - **Coverage gaps.** Code that T never reached. The guarantee does not extend there, and the report says so.
-- **Escapes.** A property marked proved or bounded that is in fact violated on the code. The evaluation measures the escape rate against an independent oracle (RQ4). This measured rate replaces the guarantee by construction that translation would have given.
+- **Escapes.** A property marked proved or bounded that is in fact violated on the code. The evaluation records the escape rate against an independent oracle (evaluation.md §9). This measured rate replaces the guarantee by construction that translation would have given.
 
 ## 4. The per-turn pipeline
 
@@ -215,9 +215,9 @@ The core is what the evaluation needs. The extensions are what makes it a tool.
 
 | Milestone | Tool | Evidence |
 | --- | --- | --- |
-| Oct 14 (report 1) | **Done:** Lean core (`Model`, BFS, replay, trace selection, `eval`). A hand-built model and adapter for the whole forge app, 16 properties and 7 proofs. | **Done:** feasibility ([feasibility-study.md](feasibility-study.md)) and the preliminary study ([preliminary-study.md](preliminary-study.md)). |
+| Before report 1 | **Done:** Lean core (`Model`, BFS, replay, trace selection, `eval`). A hand-built model and adapter for the whole forge app, 16 properties and 7 proofs. | **Done:** feasibility ([feasibility-study.md](feasibility-study.md)) and the preliminary study ([preliminary-study.md](preliminary-study.md)). |
 | Oct 30 (report 2) | **Done early:** LLM synthesis and repair of the model and adapter, change impact, situations (vacuity), ledger extraction, hooks and the `Stop` feedback loop. Still to do: PBT side-car. | LLM-written model against the hand-built one. Agent baseline runs. Study A (controlled detection) started. First RQ1 numbers. |
-| Nov 18 (report 3) | Proof attempts and auxiliary invariants, triage, the assurance report. | Study B (end-to-end sessions), RQ4 escapes, RQ5 overhead. |
+| Nov 18 (report 3) | Proof attempts and auxiliary invariants, triage, the assurance report. | Study B (end-to-end sessions), RQ4 overhead. |
 | Dec 9 (final) | Confirmation questions, dispute tool, `/constraints`. | Our own scenarios if time allows. Write-up. |
 
 Confirmation questions come last on purpose. In the evaluation, the simulated developer only needs to answer them, so building the full interaction can wait.
@@ -225,11 +225,11 @@ Confirmation questions come last on purpose. In the evaluation, the simulated de
 ## 11. Risks
 
 - **Constraints about fine output detail make the model large.** For example, a constraint on an exact output format means the model has to produce that format. Response: measure model size against the number and kind of constraints, and report it.
-- **The model cannot be made to conform.** Some applications have state that is hard to observe or a lot of incidental behavior. Response: the `unchecked` and `unobservable` levels make the failure visible, and RQ5 measures how often it happens.
+- **The model cannot be made to conform.** Some applications have state that is hard to observe or a lot of incidental behavior. Response: the `unchecked` and `unobservable` levels make the failure visible, and RQ4 measures how often checks fail.
 - **Proofs fail on realistic models.** A model that updates state step by step needs auxiliary invariants. Response: `bounded(k)` is still useful, and the proof rate is a reported result. In the forge prototype, all 7 attempted invariants were proved without auxiliary invariants. That is encouraging, but those were hand-written proofs on a hand-written model.
 - **PBT detects just as much.** That is plausible on small state spaces. Response: as in §1, the ledger, the evidence levels and triage do not depend on winning RQ2.
-- **Cost per turn.** Synthesis and repair use LLM calls. Response: change impact and caching, and RQ5 measures the cost.
-- **Trace validation misses a stale model.** If the traces never reach the changed behavior, a model that has fallen behind the code still passes. Response: select traces by transition coverage, and measure escapes (RQ4).
+- **Cost per turn.** Synthesis and repair use LLM calls. Response: change impact and caching, and RQ4 measures the cost.
+- **Trace validation misses a stale model.** If the traces never reach the changed behavior, a model that has fallen behind the code still passes. Response: select traces by transition coverage, repair on unreached changed code, require that search reach each constraint's situation, and record escapes (evaluation.md §9).
 - **The adapter is large and trusted.** In the prototype it was 60% of the model's size, and it held the subtle problems: tie order, IDs that can't be represented, response envelopes. Response: generic adapter parts move into a shared library. Adapter errors get their own checks, such as confirming that an action translated out and back is unchanged.
 
 ## Appendix A. Why not translate Python

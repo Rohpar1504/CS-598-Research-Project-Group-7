@@ -77,7 +77,7 @@ Before the tool had a `synthesize` command, a standalone script (`studies/synthe
   - stronger models than Haiku;
   - repeated runs, to measure variance;
   - repairs of agent-written edits, as opposed to our seeded ones;
-  - how often a stale or narrow model still slips through (RQ4).
+  - how often a stale or narrow model still slips through (tracked as a check on the tool; evaluation.md §9).
 
   The live run's synthesized model was checked only against the tool's own validation traces, not graded independently like the standalone run.
 

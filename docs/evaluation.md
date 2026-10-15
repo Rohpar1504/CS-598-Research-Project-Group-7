@@ -1,8 +1,8 @@
 # Lean Companion: Evaluation Design
 
-Oct 12, 2026. Settled. It replaces the evaluation in the submitted proposal; the project brief summarizes it. The tool design is in [design.md](design.md). The preliminary study it relies on is in [preliminary-study.md](preliminary-study.md).
+Oct 15, 2026. Settled, and matches the evaluation in report 1, which this document gives in more detail. It replaces the evaluation in the submitted proposal. The tool design is in [design.md](design.md). The preliminary study it relies on is in [preliminary-study.md](preliminary-study.md).
 
-## 1. Problems with the evaluation as submitted
+## 1. Problems with the evaluation in the proposal
 
 Each problem comes with its evidence. Section 3 onward fixes them.
 
@@ -52,16 +52,19 @@ The combination is new. We therefore build on established tasks, as MT-Sec did w
 
 ## 3. Research questions
 
-| RQ | Question | Status and notes |
-| --- | --- | --- |
-| Preliminary | How often do agents break requirements they previously met? What kind are those requirements, and were they stated? | Done for EvoCode-Bench ([preliminary-study.md](preliminary-study.md)). Our own baseline runs (§5) add Sonnet and Haiku. |
-| RQ1 Formalization | How accurately does the companion turn constraints in the conversation into properties? How reliably does it revise or retire them? Does it tell a regression apart from a change of mind? | EvoCode-Bench labels its correction and conflict rounds. 40% of regressions fall in such rounds, so triage is exercised but is not the main case. |
-| RQ2 Detection | Given the same properties and the same time budget, does model search plus proof find violations that PBT on the code, or bounded search on the code, misses? | Study A. Results are reported per kind (state, compute, format, input). |
-| RQ3 Mitigation | Does feedback from the companion reduce regressions over a session, compared with no side-car, a constraint reminder, a PBT side-car and an oracle gate? | Study B. If Sonnet rarely regresses, there is little to mitigate. Then Haiku carries RQ3, and Sonnet's low rate is reported (§5). |
-| RQ4 Assurance | When the companion marks a constraint proved or checked to depth k, how often is it violated on the code anyway? How much of the code does trace validation exercise, and how often does a stale model still pass it? | Study A. The forge prototype already shows the risk: random traces missed 4 of 10 seeded bugs, and transition coverage caught all 10. |
-| RQ5 Overhead | Latency, tokens, model repair rate, how often entries are `unchecked`, and how these grow with the session. | Study B. |
+The evaluation has two studies: a controlled detection study that runs no agents (Study A, §6), and end-to-end sessions (Study B, §7). RQ2 draws on both; RQ1, RQ3 and RQ4 on the sessions.
 
-A tie on RQ2 is still a result. The contribution then rests on RQ1, RQ4 and the constraint ledger itself.
+| RQ | Question | Notes |
+| --- | --- | --- |
+| Preliminary | How often do agents break requirements they previously met? What kind are those requirements, and were they stated? | Done for EvoCode-Bench ([preliminary-study.md](preliminary-study.md)). It motivates the design but is not part of the report's evaluation. |
+| RQ1 Formalization fidelity | How accurately does the companion translate constraints stated in the conversation into Lean invariants, and how reliably does it update or retire constraints that are later revised or contradicted? | Study B. EvoCode-Bench labels its correction and conflict rounds, which exercise revision. |
+| RQ2 Violation detection | Given the same invariants and the same time budget, does bounded model checking over the Lean model find violations that property-based tests on the code miss? | Study A (seeded mutants), and the regressions from our agent runs. |
+| RQ3 Regression mitigation | When the detected violations are returned to the coding agent, does the companion reduce regressions over a session, compared with an unassisted agent, an agent reminded of the constraints, a PBT side-car and an oracle gate? | Study B. If Sonnet rarely regresses, there is little to mitigate. Then Haiku carries RQ3, and Sonnet's low rate is reported (§5). |
+| RQ4 Overhead | What latency and token overhead, and what failure rate, do model synthesis, model repair and checking produce per turn, and how do these scale as the session and the code grow? | Study B. |
+
+A tie on RQ2 is still a result. The contribution then rests on RQ1 and the constraint ledger itself.
+
+Not research questions, though the tool has them: telling a regression apart from a change of mind (triage), and how often a constraint reported checked is violated on the code anyway. The second is recorded as a check on the tool (§9).
 
 ## 4. Ground truth, kept independent of the companion
 
@@ -69,8 +72,8 @@ For each application we evaluate on, we prepare the following. None of it is sha
 
 - **Constraint annotations.** For each round, the constraints that are active, with their status (new, revised, superseded or retired). Two people annotate at least half the tasks independently, and we report Cohen's kappa. These are the ground truth for RQ1.
 - **A reference model and properties** in Lean, written by us. For the forge app these already exist: the hand-built model from the prototype (`lean/Forge`). They are used to decide whether an extracted property means the same as an annotated one. Two predicates count as equivalent if they agree on every state the reference model reaches up to scope k. This is checked mechanically.
-- **An invariant oracle.** A hand-written adapter, the reference properties, and long random traces with a large budget, run on the real code. It is the ground truth for "a constraint is violated" in RQ2–RQ4. It must stay separate from the companion's adapter, which an LLM writes.
-- **Labels for benchmark tests.** Every test is labeled with the same kinds as the preliminary study (state, compute, format, input, other) and as stated or not stated. RQ2 and RQ3 report results per label.
+- **An invariant oracle.** A hand-written adapter, the reference properties, and long random traces with a large budget, run on the real code. It confirms which constraint each seeded mutant and each agent-run regression violates (RQ2), and checks the final code of each session (RQ3). It must stay separate from the companion's adapter, which an LLM writes.
+- **Labels for benchmark tests.** Every test is labeled with the same kinds as the preliminary study (state, compute, format, input, other) and as stated or not stated. Oracle failures that violate no stated constraint are excluded from RQ2.
 
 The invariant oracle uses random testing, which could favor the PBT side-car. We mitigate this in two ways. The oracle has about 100 times the budget, the ground-truth properties and its own adapter. And the seeded mutants in Study A have known ground truth that does not depend on the oracle.
 
@@ -88,14 +91,13 @@ These runs give the agent-only baseline, Sonnet's and Haiku's regression rates, 
 
 The EvoCode-Bench tasks are in Go and run in Docker through Harbor, so both need to be installed first.
 
-## 6. Study A: controlled detection (RQ2, RQ4)
+## 6. Study A: controlled detection (RQ2)
 
 This study runs no agents, so it is deterministic, cheap and can be large.
 
 **The regression corpus.** Pairs of a code version and a violated constraint:
 
-- **Mined.** Regressions on stated constraints from our own agent runs, in the baseline runs and in Study B, using the saved workspace snapshots. The published EvoCode-Bench runs cannot be used, because they contain no code.
-- **Seeded.** Mutation operators applied to the reference solutions. These exist for every EvoCode-Bench round (`steps/round-N/solution`) and every SlopCodeBench checkpoint. The operators follow the kinds found in the preliminary study:
+- **Seeded.** Mutation operators applied to the reference solutions. These exist for every EvoCode-Bench round (`steps/round-N/solution`) and every SlopCodeBench checkpoint. The operators are modeled on common agent regressions, following the kinds found in the preliminary study. The report names the four main ones: dropping a guard, updating before the validation check, an off-by-one at a boundary, and a change in the output format. In full:
   - **state:**
     - forget to update derived state;
     - skip a guard on a new path;
@@ -110,38 +112,35 @@ This study runs no agents, so it is deterministic, cheap and can be large.
   - **format:** a changed output field, ordering or token.
   - **input:** validation skipped on a new path, or errors checked in the wrong order.
 
-  A mutant counts only if the invariant oracle confirms it violates a ground-truth property. This removes equivalent mutants.
+  Every mutant breaks one known constraint of the specification. A mutant counts only if the invariant oracle confirms it, which removes equivalent mutants.
 
   The forge prototype already has 10 such mutants (`studies/feasibility/make_mutants.py`), and its scripts are the template for this study.
+- **Mined.** Regressions on stated constraints from our own agent runs (the baseline runs and Study B), using the saved workspace snapshots. The published EvoCode-Bench runs cannot be used, because they contain no code.
 
-**Clean versions.** The reference solutions without mutation, used to measure false alarms and escapes (RQ4).
+**Clean versions.** The reference solutions without mutation, used to measure false positives. The companion reports only violations it reproduced on the code, so a false positive can only come from a wrong invariant.
 
-**What is compared**, at equal wall-clock budgets of 30 s and 300 s:
+**What is compared**, at equal wall-clock budgets of 30 s and 300 s, with the same invariants:
 
 | Checker | What it does |
 | --- | --- |
-| PBT on code | Hypothesis `RuleBasedStateMachine`, driven through the adapter, with shrinking |
-| Bounded search on code | BFS over real executions through the adapter. It separates "exhaustive" from "on a model". |
-| Companion, BFS only | Model plus BFS, with each counterexample replayed on the code |
-| Companion, full | Plus proofs and auxiliary invariants |
-| Companion, no repair | Ablation: the model is synthesized once and never repaired after failed trace validation |
+| PBT on code | Hypothesis `RuleBasedStateMachine`, driven through the same test harness (adapter), with shrinking |
+| Lean companion | Bounded model checking of the Lean model, with each counterexample replayed on the code |
 
 Each checker runs twice:
-- with the ground-truth properties, which isolates the power of the checking method;
-- with the properties the companion extracted, which measures the whole pipeline.
+- with the ground-truth invariants, which isolates the power of the checking method;
+- with the invariants the companion extracted, which measures the whole pipeline.
 
-Trace validation in every companion configuration uses transition coverage. The prototype showed that random traces let stale models pass.
+Trace validation uses transition coverage. Optional ablations, not part of the report: bounded search directly on the code, and a model that is never repaired.
 
-**Metrics:**
-- the fraction of mutants detected, per kind;
-- the time until detection;
-- the length of the counterexample;
-- the rate of model errors, meaning counterexamples on the model that do not reproduce on the code;
-- on clean versions: the fraction of properties proved, bounded or unchecked, and the escapes the invariant oracle finds.
+**Metrics (RQ2):**
+- detection recall and precision against the seeded mutants and the mined regressions that violate a stated constraint, per kind;
+- turns-to-detection, for the mined regressions;
+- time to detection and counterexample length, as secondary measures;
+- alarms that match no seeded or labeled violation are inspected by hand.
 
 **Size.** About 6 applications × about 5 rounds × about 10 mutants, so about 300 mutants, plus the mined regressions. The applications should include kvstore, which carries most of the state regressions.
 
-## 7. Study B: end-to-end sessions (RQ1, RQ3, RQ5)
+## 7. Study B: end-to-end sessions (RQ1, RQ3, RQ4, and RQ2's mined regressions)
 
 **Tasks.** Chosen from the preliminary study and the baseline runs:
 
@@ -149,32 +148,33 @@ Trace validation in every companion configuration uses transition coverage. The 
 - **SlopCodeBench:** forge, dynamic_config_service_api and trajectory_api, plus mvvault, meshctl or pwd_manager if they pass a screen.
 - **The scenarios from §8**, if they are built.
 
-**Configurations.** All use the same agent, the same retry budget per round and the same time budget for the side-car:
+**Configurations.** All use Claude Code as the coding agent (Sonnet as the main model, Haiku as the weaker one), one retry per checkpoint, and the same time budget per check for the two side-cars:
 
 1. Agent only.
 2. **Constraint reminder.** The ledger's text is injected into the context every turn, with no checking.
-3. PBT side-car. It uses the same ledger, adapter and compiled predicates as the companion. Only the checking method differs.
-4. Lean companion.
+3. PBT side-car. It turns the extracted invariants into property-based tests and runs them through the same test harness (adapter) as the companion. Only the checking method differs.
+4. Lean companion: checks the invariants against a Lean model of the code, written and repaired by an LLM and validated by trace validation, and returns failing tests to the agent.
 5. Oracle gate, as an upper bound. It reruns the benchmark tests and rolls back on regression, as in Huang et al.
 
 **Metrics:**
 
-- **Primary:** the regression rate per requirement, normalized by opportunity, as in the preliminary study. It is reported per test label (§4).
-- **Secondary:**
-  - the pass rate at each round;
-  - the drop from the first round to the last;
-  - violations the invariant oracle finds at the final round.
 - **RQ1:**
-  - precision and recall of the ledger against the annotations, per round;
-  - triage accuracy on correction and conflict rounds;
-  - the number of questions asked to the developer.
+  - precision and recall of the generated invariants against the annotated constraints, with and without developer confirmation;
+  - the fraction that typecheck in Lean;
+  - when a checkpoint revises or contradicts a constraint, how many superseded constraints the companion correctly updated or retired, and how many stale invariants are still active.
+- **RQ3**, following Huang et al.:
+  - the per-checkpoint oracle pass rate;
+  - the degradation from the first checkpoint to the last;
+  - the fraction of problems that regress;
+  - the rate at which requirements that once passed are broken later (normalized by opportunity, as in the preliminary study), since a single persistent failure makes a whole checkpoint fail.
+- **RQ4:** the time and cost of writing and repairing the model, the added latency and tokens per turn, and the rate of failed or timed-out checks.
 
 **How the developer's messages are delivered.** EvoCode-Bench's instructions are detailed specifications of 92 to 3,865 words, which is much more explicit than vibe-coding chat. For RQ1 we run two conditions:
 
 - **as written:** the instructions are given as they are;
 - **paraphrased:** a simulated developer splits each instruction into short messages and leaves some details implicit.
 
-SlopCodeBench checkpoints are always paraphrased this way. In both conditions, the simulated developer answers the companion's questions from the annotations.
+SlopCodeBench checkpoints are always paraphrased this way. In both conditions, the simulated developer answers the companion's confirmation questions according to the specification.
 
 **Statistics.** The design is paired: the same task and seed across all configurations.
 
@@ -209,3 +209,4 @@ We write and freeze the scenarios before tuning the companion, and report their 
 - **Benchmark instructions are more explicit than real conversation.** The paraphrased condition in Study B addresses this.
 - **The benchmarks may have leaked into training data.** Both carry canary strings. We cannot control for this, so we say so.
 - **Language.** EvoCode-Bench is mostly Go, and SlopCodeBench is Python. We report results per language.
+- **A model that has fallen behind the code can still pass trace validation,** if no trace reaches the changed behavior; then a constraint can be reported checked although the code breaks it. Mitigations: transition coverage, repair on changed code that no trace reaches, and requiring that search reach each constraint's situation (design.md §7). We record how often a constraint reported checked is violated on the code (against the invariant oracle) as a check on the tool, not as a research question.

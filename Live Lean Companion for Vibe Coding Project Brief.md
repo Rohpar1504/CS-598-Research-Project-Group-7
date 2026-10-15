@@ -1,6 +1,6 @@
 # Live Lean Companion for Vibe Coding: Project Brief
 
-Oct 13, 2026
+Oct 15, 2026
 
 ## The project in short
 
@@ -111,86 +111,75 @@ Claude Haiku 5.5, at low effort, writes the model and adapter of forge from its 
   4. evidence for each constraint.
 - `hook`: the Claude Code `UserPromptSubmit` and `Stop` hooks. `Stop` blocks the agent, at most once per turn, with reproductions of broken constraints.
 
-Not built yet:
-- triage of a change of mind (only "stated this turn" versus "regression");
-- confirmation questions;
-- proofs in the loop;
-- the PBT side-car.
-
-The hooks have not yet been run in a live Claude Code session.
+What is not built yet is listed under [Plan](#plan).
 
 ## Evaluation
 
-The full plan is in [docs/evaluation.md](docs/evaluation.md). The evaluation as submitted had problems. Each is now resolved:
+As in report 1; the details are in [docs/evaluation.md](docs/evaluation.md), and why it differs from the proposal's evaluation is in its §1.
 
-| Problem | Resolution |
-| --- | --- |
-| No existing benchmark combines multi-turn evolution, application state, constraints carried across turns, and being runnable. We checked SlopCodeBench, EvoCode-Bench, Vibe Code Bench, BaxBench, MT-Sec, CodeIF-Bench and SysMoBench. | Use the stateful tasks of SlopCodeBench (forge, dynamic_config_service_api, trajectory_api) and EvoCode-Bench (lsm-kvstore-engine, multiservice-deploy-pipeline, mlpipe-orchestrator, mlops-inference-gateway). Optionally add multi-turn sessions built on existing apps, such as BaxBench's access-control backends, as MT-Sec did. |
-| "Stateful" in EvoCode-Bench means a persistent workspace, and most regressions are not about state. | The companion's scope covers state, outputs and input handling, which is all of what breaks. Results are reported per kind. |
-| Strong models rarely regress, so end-to-end mitigation (RQ3) may have little to work on. | Sonnet is the main agent and Haiku the weak one. If Sonnet regresses too rarely, Haiku carries RQ3 and Sonnet's rate is reported. The headline claims rest on the controlled study (RQ2, RQ4) and the ledger (RQ1). |
-| Benchmark tests are the wrong ground truth: they mostly check things nobody stated, or formats. | Our own ground truth: annotated constraints, a reference Lean model (forge's exists), and an independent invariant oracle. Benchmark tests are labeled stated / not stated and reported separately. |
-| No baseline for simply reminding the agent of the constraints. | Added a constraint-reminder configuration. |
-| The PBT comparison mixed translation with checking. | The PBT side-car uses the same ledger, adapter and compiled predicates. Only the checking method differs. |
-| Per-round pass/fail hides what we care about. Opus "fails" kvstore while passing 203 of 204 cases. | The main metric is the regression rate per requirement, normalized by opportunity. |
-| Published agent runs can't be replayed: they contain no code. | Real regressions come from our own runs, with the workspace saved every round. Seeded bugs fill the rest, as in the prototype. |
-| SlopCodeBench's Harbor conversion leaks hidden tests. | Use its native runner. |
-| Huang et al.'s numbers are function-level. | Cited only for function-level code. |
+No existing benchmark combines multi-turn evolution, persistent application state, constraints carried across turns, and publicly runnable tests. So we adapt the stateful tasks of SlopCodeBench (forge, dynamic_config_service_api, trajectory_api) and EvoCode-Bench (lsm-kvstore-engine, multiservice-deploy-pipeline, mlpipe-orchestrator, mlops-inference-gateway): a simulated developer delivers each specification change conversationally, and the checkpoint specifications are the ground truth. Two studies:
+
+- **Controlled detection,** which runs no agents: seeded mutants of the reference solutions, plus the regressions from our own agent runs.
+- **End-to-end sessions,** with five configurations: agent-only, a constraint reminder, a PBT side-car, the Lean companion, and an oracle gate as the upper bound. Sonnet is the main agent and Haiku the weaker one; each configuration runs three times per task.
 
 Research questions:
-- **Preliminary:** done.
-- **RQ1:** formalization and triage.
-- **RQ2:** detection against PBT on the code and bounded search on the code, at equal budget.
-- **RQ3:** mitigation over a session, against agent-only, constraint reminder, PBT side-car and an oracle gate.
-- **RQ4 (new):** assurance. How often does "proved" or "checked" fail on the code anyway, and how often does a stale model pass validation?
-- **RQ5:** overhead.
+- **RQ1, formalization fidelity:** how accurately constraints become Lean invariants, and how reliably revised or contradicted ones are updated or retired.
+- **RQ2, violation detection:** at equal invariants and time budget, does bounded model checking over the Lean model find violations that property-based tests on the code miss?
+- **RQ3, regression mitigation:** does the companion's feedback reduce regressions over a session, against the other four configurations?
+- **RQ4, overhead:** latency, tokens and failure rate of synthesis, repair and checking per turn, and how they scale.
 
-A tie on RQ2 is still a result.
+RQ2 uses both studies; the others use the sessions. A tie on RQ2 is still a result: the contribution then rests on the ledger and its evidence levels.
 
-## Next steps
+## Plan
 
-Two statuses: **wanted** means we want it, at the date given; **proposed** means it has been suggested but not decided.
+### Milestones
 
-### Wanted by Oct 14 (report 1)
+| Date | Milestone | Status |
+| --- | --- | --- |
+| Oct 14 | Report 1: the design and the evaluation plan | Submitted. The studies and the tool's results are not in it. |
+| Oct 30 | Report 2 | Contents not decided. |
+| Nov 18 | Report 3 | Wanted: the controlled detection study, the end-to-end sessions, models for two or three more apps, triage, and the hooks tried in live sessions. |
+| Dec 9 | Final report | Results for RQ1–RQ4, and the write-up. |
 
-- **Report 1.** Present the design, the preliminary study and the forge prototype.
-- **Second labeler for the preliminary study.** Someone other than the first labeler labels 40–50 of the requirements in `studies/preliminary/labels.csv`, blind, so agreement (Cohen's kappa) can be reported. Until then the study's numbers rest on one labeler.
-- **LLM-written model and adapter.** Done for forge, with Haiku at low effort; see above. Still open: other applications, stronger models, and repeated runs to measure variance.
-- **Constraint extraction (RQ1).** A simulated developer delivers forge's checkpoints as conversation, and the extracted constraints are scored against ground-truth annotations. Needs: the annotations, written by someone who is not building extraction, and API access.
-- **Agent baseline runs.** Sonnet and Haiku, with no side-car, on the stateful tasks: SlopCodeBench's forge, dynamic_config_service_api and trajectory_api, through its native runner; EvoCode-Bench's lsm-kvstore-engine, multiservice-deploy-pipeline, mlpipe-orchestrator and mlops-inference-gateway. The code is saved after every round. This gives the regression rates and the corpus of real regressions. Needs: Docker, Harbor, Go, and an agreed API budget.
-- **PBT baseline.** Hypothesis stateful testing, driven through the same adapter and checking the same compiled predicates. Needs: `hypothesis` installed.
+### Open work
 
-### Wanted later
+Wanted, with no date of its own. The evaluation needs all of it.
 
-- **Oct 30, report 2:** open. Its earlier items moved to Oct 14.
-- **By Nov 18, report 3:**
-  - the Claude Code loop: triage, and the hooks and feedback to the agent (built) tried in live sessions;
-  - models for two or three more apps;
-  - Study A (controlled detection on seeded and mined bugs);
-  - Study B (end-to-end sessions).
-- **Dec 9, final:** results for RQ1–RQ5, and the write-up.
+**For the evaluation**
+- **Ground-truth annotations.** The constraints each checkpoint states, with revisions, for the chosen tasks; written by someone who is not building extraction. RQ1 and RQ2 depend on them.
+- **Agent baseline runs.** Sonnet and Haiku, no side-car, on the seven tasks above, through SlopCodeBench's native runner; the code saved after every round. They give the regression rates and the corpus of real regressions. Needs: Docker, Harbor, Go, and an agreed API budget.
+- **PBT side-car.** Hypothesis stateful testing through the same adapter, checking the same compiled invariants. Needs: `hypothesis`.
+- **Simulated developer** and **oracle gate.** Neither exists yet.
+- **Mutants for the other tasks.** Forge has 10.
+- **Second labeler for the preliminary study.** 40–50 of the requirements in `studies/preliminary/labels.csv`, labeled blind, so agreement (Cohen's kappa) can be reported.
+
+**For the tool**
+- **Other applications.** Only forge (Python) has been run. The EvoCode-Bench tasks are mostly Go.
+- **Synthesis beyond one run.** Stronger models than Haiku, and repeated runs to measure variance.
+- **Triage** of a change of mind. Today a violation is only labeled "stated this turn" or "regression".
+- **Confirmation questions** to the developer.
+- **Proofs in the loop.** In the design, but not in report 1's technique or evaluation.
 
 ### Proposed, not decided
 
-- **Skip for now** the things the evaluation does not need: plugin packaging, a background daemon, `/constraints`, and the confirmation dialog. (The tool's commands, caching and the detection of unreached changed code are built.)
-- **A first live Claude Code session** with the hooks, on forge, to see the loop with a real coding agent before the benchmark runs.
-- **Split of work.** Ground truth should not come from whoever builds extraction. So one of us takes the work that is independent of the tool: the second labels, the ground-truth annotations, the agent baseline runs and the PBT baseline. The other takes model synthesis and extraction.
+- **A first live Claude Code session** with the hooks, on forge, before the benchmark runs.
+- **Skip for now** what the evaluation does not need: plugin packaging, a background daemon, and `/constraints`.
+- **Split of work.** Ground truth should not come from whoever builds extraction, so one of us takes the work independent of the tool (annotations, second labels, baseline runs, PBT side-car) and the other the tool.
 - **Our own scenarios:** multi-turn sessions built on existing apps, such as BaxBench's access-control backends, if the external benchmarks give too little.
-- **Adapter hardening:**
-  - move the generic parts (ID mapping, envelopes, tie order) into a shared library;
-  - add checks of the adapter itself, such as confirming that an action translated out and back is unchanged.
+- **Adapter hardening:** move the generic parts (ID mapping, envelopes, tie order) into a shared library, and check the adapter itself, for example that an action translated out and back is unchanged.
 - **Housekeeping:** verify the author list of the Veil entry in `refs.bib`.
 
 ## Open questions and risks
 
-- **Can an LLM write the model and adapter well?** For forge, yes, even with Haiku (see above). Other applications, especially non-Python ones, are untested.
+- **Can an LLM write the model and adapter for other applications?** For forge, yes, even with Haiku. Other applications, especially non-Python ones, are untested.
 - **How specific are the extracted situations?** A constraint is only as well checked as its situation is specific: a vague one is reached easily and hides a narrow search. This is part of RQ1.
-- **The adapter is trusted and large.** Its errors can hide real differences. It needs its own checks, and shared code across apps.
-- **Strong agents rarely regress,** so RQ3 may show a small effect with Sonnet.
-- **PBT may detect as much.** The contribution then rests on the ledger, evidence levels and triage.
+- **The adapter is trusted and large.** Its errors can hide real differences.
+- **Strong agents rarely regress,** so RQ3 may show a small effect with Sonnet. Then Haiku carries RQ3, and Sonnet's rate is reported.
+- **PBT may detect as much** (RQ2).
 - **Choosing the search scope.** Too small and bugs can't occur; each added value multiplies the states.
-- **Benchmark instructions are more explicit than real conversation.** The simulated developer paraphrases them into vaguer messages for RQ1.
-- **The preliminary study had one labeler.** A second person should check a subset of `studies/preliminary/labels.csv` before its numbers are reported.
-- **Cost per turn** (RQ5).
+- **Benchmark instructions are more explicit than real conversation.** The simulated developer paraphrases them into vaguer messages.
+- **The preliminary study's numbers rest on one labeler** until the second labels are in.
+- **Cost per turn** (RQ4).
 
 ## Related work and how we differ
 
@@ -224,4 +213,4 @@ Each piece of the companion has a neighbour. No published work puts them togethe
 | [docs/preliminary-study.md](docs/preliminary-study.md) | What regressions agents make (EvoCode-Bench) |
 | [docs/feasibility-study.md](docs/feasibility-study.md) | The forge prototype and its results |
 | [docs/synthesis-and-repair.md](docs/synthesis-and-repair.md) | LLM-written models: synthesis, repair, and situations |
-| CS_598_…pdf | The submitted proposal. The evaluation and stage 2 in it are superseded by this brief. |
+| [report-1.pdf](report-1.pdf) | Report 1, as submitted: the design and the evaluation plan. It supersedes the proposal's evaluation and stage 2. (The proposal itself is in git history.) |
