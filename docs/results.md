@@ -75,20 +75,3 @@ Detected: 6/10 with random traces, 10/10 with transition coverage. Only the inte
 | Booking example: repair after `move` is added without the overlap check | 65 s | $0.02 | model extended; overlap constraint violated, reproduced |
 
 Check per turn, hand-built model: about 20 s for the first check, about 3 s after an edit (cached).
-
-## Tool prototype (`companion`)
-
-About 2,000 lines of Python plus a generic Lean core. Run on forge and on the booking example.
-
-| Stage | Built | Not built |
-| --- | --- | --- |
-| 1. Constraint extraction | Message → ledger entry (Lean predicate + situation), typechecked, one LLM repair round | Confirmation questions |
-| 2. Model maintenance | LLM synthesis and repair of model and adapter; trace validation by transition coverage, cached per changed code; repair on unreached changed code | |
-| 3. Checking | Search per area; constraint reported checked only if its situation is reached | Proofs in the loop |
-| 4. Feedback | Replay on the real program; `Stop` hook returns reproductions to the agent | Triage (regression or change of mind) |
-
-Not built: the PBT side-car, the simulated developer, the oracle gate. The hooks have not been used in a live Claude Code session.
-
-Tests: 54 (stand-in LLM, real forge program). Last full pass: Oct 20.
-
-Smallest example: [examples/booking](../examples/booking/README.md), the whole loop with Haiku, about 4 min, $0.05.
