@@ -1,24 +1,27 @@
 """Command line of the companion.
 
-  python -m companion new WORKSPACE --program PATH [--app NAME]
-  python -m companion --config CONFIG [--program PATH] COMMAND
+The companion keeps its workspace in `.companion/` next to the program it checks, and finds
+it from the current directory (or a parent), as git finds `.git`.
 
-CONFIG is a workspace directory or a config file (such as apps/forge/companion.json).
+  companion init PROGRAM [--model M]    set up .companion/ for PROGRAM (no model yet); M is the
+                                        LLM for everything (default claude-haiku-5-5)
+  companion synthesize                  have the LLM agent write the model and adapter
+  companion tell MESSAGE...             a developer message -> constraints (needs an LLM)
+  companion check [--no-llm] [-v]       check every constraint against the code, after an agent turn
+  companion status                      the constraints and their last result
+  companion reset [--from LEDGER.json]  start over: empty constraints, or a copy of a ledger
+  companion hook user-prompt|stop       Claude Code hooks: read the hook's JSON on stdin
 
-  new WORKSPACE               make a workspace for an application, with no model yet
-  synthesize                  have the LLM agent write the workspace's model and adapter
-  validate [--quick]          trace-validate the model against the program (no repair)
-  init [--from LEDGER.json]   start a session: empty ledger, or a copy of an existing one
-  ledger                      show the ledger
-  build                       typecheck the ledger's predicates and build the executable
-  check [--no-repair]         check every active constraint against the code (writes report.json);
-                              repairs a workspace's model first if it has fallen behind the code
-  extract MESSAGE...          turn a developer message into ledger changes (needs an LLM backend)
-  hook user-prompt|stop       Claude Code hooks: read the hook's JSON on stdin
+  companion validate [--quick]          trace-validate the model against the program (debugging)
+  companion build                       typecheck the constraints and build the model (debugging)
+
+Every command takes `--workspace PATH` to use another workspace, or a fixed config such as
+apps/forge/companion.json (also COMPANION_WORKSPACE).
 """
 
 import argparse
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -26,36 +29,61 @@ from pathlib import Path
 from companion.config import Config
 from companion.ledger import Ledger
 
+DIR = ".companion"
+
+
+def find_workspace(given: str | None) -> Path | None:
+    if given or os.environ.get("COMPANION_WORKSPACE"):
+        return Path(given or os.environ["COMPANION_WORKSPACE"])
+    for d in [Path.cwd(), *Path.cwd().parents]:
+        if (d / DIR / "companion.json").exists():
+            return d / DIR
+    return None
+
 
 def main() -> int:
-    ap = argparse.ArgumentParser(prog="companion")
-    ap.add_argument("--config", help="a workspace directory or a config file")
-    ap.add_argument("--program", help="the application under test (overrides the config)")
-    sub = ap.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("new"); p.add_argument("workspace"); p.add_argument("--app")
-    p.add_argument("--program", dest="new_program", help="the application under test")
-    sub.add_parser("synthesize")
-    p = sub.add_parser("validate"); p.add_argument("--quick", action="store_true")
-    p = sub.add_parser("init"); p.add_argument("--from", dest="source")
-    sub.add_parser("ledger")
-    sub.add_parser("build")
-    p = sub.add_parser("check"); p.add_argument("--no-repair", action="store_true")
-    p = sub.add_parser("extract"); p.add_argument("message", nargs="+")
-    p = sub.add_parser("hook"); p.add_argument("event", choices=["user-prompt", "stop"])
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--workspace", help="a workspace directory or a fixed config file")
+    common.add_argument("-v", "--verbose", action="store_true", help="show each step")
+    ap = argparse.ArgumentParser(prog="companion", description="Checks the code against the "
+                                 "developer's constraints after every agent turn.")
+    ap.add_argument("--workspace", dest="top_workspace", help=argparse.SUPPRESS)
+    sub = ap.add_subparsers(dest="command", required=True, metavar="COMMAND")
+    p = sub.add_parser("init", parents=[common], help="set up .companion/ for a program")
+    p.add_argument("program"); p.add_argument("--app")
+    p.add_argument("--model", default="claude-haiku-5-5", help="the LLM (default: claude-haiku-5-5)")
+    sub.add_parser("synthesize", parents=[common], help="have the LLM write the model and adapter")
+    p = sub.add_parser("tell", parents=[common], help="a developer message -> constraints")
+    p.add_argument("message", nargs="+")
+    p = sub.add_parser("check", parents=[common], help="check every constraint against the code")
+    p.add_argument("--no-llm", action="store_true", help="do not let the LLM update the model")
+    p.add_argument("--program", help="check another version of the program")
+    sub.add_parser("status", parents=[common], help="the constraints and their last result")
+    p = sub.add_parser("reset", parents=[common], help="start over with no constraints")
+    p.add_argument("--from", dest="source", help="start from a copy of this ledger")
+    p = sub.add_parser("hook", parents=[common], help="Claude Code hooks")
+    p.add_argument("event", choices=["user-prompt", "stop"])
+    p = sub.add_parser("validate", parents=[common], help="trace validation only (debugging)")
+    p.add_argument("--quick", action="store_true")
+    sub.add_parser("build", parents=[common], help="build the model and constraints (debugging)")
     args = ap.parse_args()
+    args.workspace = args.workspace or args.top_workspace
+    say = lambda m: print(m, file=sys.stderr, flush=True)
+    log = say if args.verbose else (lambda m: None)
 
-    if args.command == "new":
+    if args.command == "init":
         from companion import workspace
-        program = args.new_program or args.program
-        if not program:
-            ap.error("new needs --program")
-        cfg = workspace.create(Path(args.workspace), Path(program), app=args.app)
-        print(f"workspace for {cfg.app} in {cfg.workspace}; next: --config {cfg.workspace} synthesize")
+        ws = Path(args.workspace) if args.workspace else Path(args.program).resolve().parent / DIR
+        cfg = workspace.create(ws, Path(args.program), app=args.app, agent={"model": args.model},
+                               check={"llm": {"model": args.model}})
+        print(f"Created {_shown(cfg.workspace)} for {cfg.program.name}, using {args.model}.\n"
+              f"Next: `companion synthesize` has the LLM write the model ({cfg.namespace}), "
+              f"or write lean/{cfg.namespace}.lean and adapter.py there yourself.")
         return 0
-    if not args.config:
-        ap.error("--config is required")
-    cfg = Config.load(args.config, args.program)
-    log = lambda m: print(m, file=sys.stderr)
+    found = find_workspace(args.workspace)
+    if found is None:
+        ap.error(f"no {DIR}/ here or in a parent directory: run `companion init PROGRAM` first")
+    cfg = Config.load(found, getattr(args, "program", None))
 
     if args.command == "synthesize":
         from companion.llm import agent_backend, backend
@@ -63,25 +91,33 @@ def main() -> int:
         agent = agent_backend(cfg)
         if agent is None:
             ap.error("synthesize needs a workspace and Claude Code (set COMPANION_CLAUDE if it is not found)")
-        result = synthesize(cfg, agent, backend(cfg), log)
-        print(json.dumps({k: v for k, v in result.items() if k not in ("synthesis", "repair")}, indent=1))
+        agent.progress = say
+        result = synthesize(cfg, agent, backend(cfg), say)
+        took = f"{round((result['seconds'] or 0) / 60, 1)} min" + (f", ${result['cost_usd']:.2f}" if result["cost_usd"] else "")
+        if result["matches"]:
+            print(f"\nThe model matches the program on {result['traces']} traces ({took}).")
+        else:
+            print(f"\nThe model does not match the program: "
+                  + (result["error"].splitlines()[0] if result["error"] else
+                     f"{result['mismatches']} of {result['traces']} traces differ") + f" ({took}).")
         return 0 if result["matches"] else 2
     elif args.command == "validate":
         from companion.sync import validate_main
         if not cfg.workspace:
             ap.error("validate works on a workspace")
         return validate_main(cfg.workspace, args.quick)
-    elif args.command == "init":
+    elif args.command == "reset":
         cfg.state_dir.mkdir(parents=True, exist_ok=True)
         if args.source:
             shutil.copy(args.source, cfg.ledger_path)
         else:
             Ledger(cfg.ledger_path).save()
         (cfg.state_dir / "messages.jsonl").unlink(missing_ok=True)
-        print(f"session started in {cfg.state_dir}")
-    elif args.command == "ledger":
-        for e in Ledger.load(cfg.ledger_path).entries:
-            print(f"{e.id:4} {e.status:12} turn {e.last_turn:2}  {e.text}")
+        n = len(Ledger.load(cfg.ledger_path).entries)
+        print(f"Started over with {n} constraint{'s' if n != 1 else ''}.")
+    elif args.command == "status":
+        from companion.check import status
+        print(status(cfg, color=sys.stdout.isatty()))
     elif args.command == "build":
         from companion.sync import build
         ledger = Ledger.load(cfg.ledger_path)
@@ -89,17 +125,17 @@ def main() -> int:
         ledger.save()
         print("built" + (f"; not formalized: {', '.join(failed)}" if failed else ""))
     elif args.command == "check":
-        from companion.check import check, for_agent, summary
+        from companion.check import check, summary
         from companion.llm import agent_backend, backend
-        agent = None if args.no_repair else agent_backend(cfg)
+        agent = None if args.no_llm else agent_backend(cfg)
+        if agent is not None:
+            agent.progress = say
         report = check(cfg, log=log, agent=agent, llm=backend(cfg) if agent else None)
-        print(summary(report))
-        message = for_agent(report)
-        if message:
-            print("\n--- message for the agent ---\n" + message)
-    elif args.command == "extract":
+        print(summary(report, color=sys.stdout.isatty()))
+        return 1 if any(e["evidence"] == "violated" for e in report["entries"]) else 0
+    elif args.command == "tell":
         from companion.extract import extract
-        print("\n".join(extract(cfg, " ".join(args.message))))
+        print("\n".join(extract(cfg, " ".join(args.message))) or "No constraints in that message.")
     elif args.command == "hook":
         from companion.hooks import user_prompt, stop
         event = json.loads(sys.stdin.read() or "{}")
@@ -107,6 +143,13 @@ def main() -> int:
         if out:
             print(json.dumps(out))
     return 0
+
+
+def _shown(path: Path) -> str:
+    try:
+        return str(path.relative_to(Path.cwd())) + "/"
+    except ValueError:
+        return str(path) + "/"
 
 
 if __name__ == "__main__":

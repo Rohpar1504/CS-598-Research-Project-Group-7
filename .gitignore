@@ -3,3 +3,5 @@
 data/
 __pycache__/
 .companion/
+lean_companion.egg-info
+.venv

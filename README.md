@@ -14,8 +14,8 @@ lean/                     Lake project (Lean 4.34.1, no Mathlib)
                           (study, hand-written properties), CompanionMain builds forge-companion
                           (properties from the ledger, generated into Forge/Ledger.lean)
 companion/                the companion (Python)
-  __main__.py             command line: new, synthesize, validate, init, ledger, build, check,
-                          extract, hook
+  __main__.py             command line: init, synthesize, tell, check, status, reset, hook
+                          (and validate, build for debugging)
   workspace.py            an application's workspace: the LLM-written model and adapter
   sync.py                 keeping the model in step with the code: synthesis, validation, repair
   coverage.py             changed code that no validation trace reaches
@@ -35,6 +35,7 @@ companion/                the companion (Python)
   abstraction.py          how an adapter marks output the model's types cannot express
   config.py, lean.py, adapters/forge.py
 apps/forge/               the companion's config for forge, an example ledger, hook settings
+examples/booking/         smallest end-to-end example: a 60-line app, with Haiku (run.sh)
 tests/                    what the companion must do, checked on the real forge program
 studies/
   preliminary/            regressions in EvoCode-Bench's published results
@@ -79,37 +80,37 @@ in `data/tmp/`, because many workers forking at once can overload a machine.
 
 ## The companion (prototype)
 
-Each application gets a workspace, where an LLM agent (Claude Code, headless) writes a Lean
-model of the program and an adapter, and keeps them in step with the code:
+The companion keeps its workspace in `.companion/` next to the program it checks, and finds
+it from the current directory, as git finds `.git`. `pip install -e .` provides the
+`companion` command (otherwise: `PYTHONPATH=REPO python3 -m companion`).
 
 ```
-python3 -m companion new WS --program path/to/app/forge     # a workspace, no model yet
-C="python3 -m companion --config WS"
-$C synthesize                       # the agent writes the model and adapter (minutes)
-$C init                             # start a session with an empty ledger
-$C extract "a bind should be all or nothing"
-$C check                            # repairs the model first if the code has moved on
-$C ledger
+cd path/to/app
+companion init app.py               # sets up .companion/ (no model yet)
+companion synthesize                # an LLM agent writes the Lean model and adapter (minutes)
+companion tell "a bind should be all or nothing"     # a developer message -> constraints
+companion check                     # after each agent turn: is every constraint kept?
+companion status                    # the constraints and their last result
 ```
 
-The agent's model and effort are set in `WS/companion.json` (`agent`). After every turn,
-`check` validates the model against the code; if they disagree, or the code changed where no
-validation trace reaches, the agent repairs the model (at most `repair_rounds` rounds) before
-constraints are checked. Each constraint also records the situation it is about (when it could
-be broken); a constraint is only reported checked if the search reaches that situation, and if
-it does not, the agent widens the search areas. Hook settings for Claude Code are in `apps/forge/claude-settings.json`.
+`check` first validates the model against the code. If they disagree, or code changed where
+no validation trace reaches, the LLM updates the model before the constraints are checked
+(`--no-llm` skips this; `-v` shows each step). A constraint is only reported checked if the
+search reaches the situation it is about. In Claude Code, the hooks run `tell` and `check`
+after every turn (`apps/forge/claude-settings.json`). The LLM is Claude Haiku 5.5 unless
+`init --model` names another; it is recorded in `.companion/companion.json` (`agent` and
+`check.llm`).
 
-The hand-built forge model has its own fixed config, which `check` cannot repair (it only
-reports that the model no longer matches):
+The smallest example, the whole loop with Haiku in about 4 minutes: [examples/booking](examples/booking/README.md).
+
+The hand-built forge model has a fixed config, which `check` cannot update:
 
 ```
-C="python3 -m companion --config apps/forge/companion.json"
-$C init --from apps/forge/example-ledger.json
-$C check                                           # add --program PATH to check another version
+companion --workspace apps/forge/companion.json reset --from apps/forge/example-ledger.json
+companion --workspace apps/forge/companion.json check    # --program PATH checks another version
 ```
 
-With the default settings in `apps/forge/companion.json`, the first `check` of a session takes
-about 20 s (125 CPU-seconds, 6 workers). Later checks rerun only the traces whose program lines
-changed: about 3 s after an edit, 2 s with no change. Session state, including that cache, goes
-to `.companion/` (not in git). Not built yet: triage of changes of mind, confirmation
+The first `check` of the forge session takes about 20 s (125 CPU-seconds, 6 workers). Later
+checks rerun only the traces whose program lines changed: about 3 s after an edit, 2 s with no
+change. Session state, including that cache, goes to `.companion/` (not in git). Not built yet: triage of changes of mind, confirmation
 questions, and proofs per constraint.

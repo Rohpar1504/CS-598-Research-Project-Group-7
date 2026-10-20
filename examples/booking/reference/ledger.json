@@ -1,0 +1,23 @@
+{
+ "turn": 1,
+ "entries": [
+  {
+   "id": "c1",
+   "text": "No two bookings of the same room overlap.",
+   "predicate": "fun t => t.after.bookings.all fun a => t.after.bookings.all fun b =>\n  a.id == b.id || a.room != b.room || a.stop ≤ b.start || b.stop ≤ a.start",
+   "kind": "state",
+   "status": "confirmed",
+   "provenance": [{"turn": 1, "quote": "no two bookings in the same room may overlap"}],
+   "situation": "two bookings of the same room exist",
+   "situation_predicate": "fun t => t.after.bookings.any fun a => t.after.bookings.any fun b => a.id != b.id && a.room == b.room"
+  },
+  {
+   "id": "c2",
+   "text": "A rejected request changes nothing.",
+   "predicate": "fun t => match t.out with\n  | .error _ => t.before == t.after\n  | _ => true",
+   "kind": "transition",
+   "status": "confirmed",
+   "provenance": [{"turn": 1, "quote": "if a request is refused, nothing should change"}]
+  }
+ ]
+}

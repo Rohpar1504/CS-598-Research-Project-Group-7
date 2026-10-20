@@ -84,15 +84,14 @@ Before the tool had a `synthesize` command, a standalone script (`studies/synthe
 ## Reproducing
 
 ```
-python3 -m companion new data/live/ws --program PATH/TO/forge --app forge
-# set "agent": {"model": "claude-haiku-5-5", "effort": "low"} in data/live/ws/companion.json
-C="python3 -m companion --config data/live/ws"
-$C synthesize
-$C init
-$C extract "if an assignment already has something bound, binding more to it has to be refused"
-$C extract "an allocation should count as bound exactly when it has an assignment"
-$C extract "don't let a blueprint be deleted while allocations still use it"
-$C check                                   # after each edit to the program
+cd PATH/TO/forge-copy
+companion init forge --app forge
+# set "agent": {"model": "claude-haiku-5-5", "effort": "low"} in .companion/companion.json
+companion synthesize
+companion tell "if an assignment already has something bound, binding more to it has to be refused"
+companion tell "an allocation should count as bound exactly when it has an assignment"
+companion tell "don't let a blueprint be deleted while allocations still use it"
+companion check                            # after each edit to the program
 ```
 
 The standalone run: `python -m studies.synthesis.run_synthesis --workspace DIR --model claude-haiku-5-5 --effort low`, then `python -m studies.synthesis.grade DIR`. The tool's behavior is specified by `tests/test_sync.py`, which uses a stand-in for the LLM agent.

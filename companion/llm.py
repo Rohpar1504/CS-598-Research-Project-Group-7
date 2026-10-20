@@ -15,8 +15,10 @@ it does not use the login: it needs an API key.)
 
 import json
 import os
+import re
 import shutil
 import subprocess
+import threading
 import time
 from pathlib import Path
 
@@ -63,6 +65,7 @@ class ClaudeAgent:
         if not self.binary:
             raise RuntimeError("no claude binary found; set COMPANION_CLAUDE")
         self.model, self.effort, self.budget, self.timeout = model, effort, budget_usd, timeout
+        self.progress = None    # called with a line for each thing the agent does, if set
 
     def run(self, prompt: str, cwd: Path, add_dirs: list = (), log: Path | None = None) -> dict:
         """Run the agent on `prompt` in `cwd` (it may also read `add_dirs`). Returns
@@ -81,12 +84,21 @@ class ClaudeAgent:
         log.parent.mkdir(parents=True, exist_ok=True)
         start = time.time()
         with open(log, "w") as fh:
-            try:
-                proc = subprocess.run(cmd, input=prompt, cwd=cwd, stdout=fh, stderr=subprocess.STDOUT, text=True,
-                                      timeout=self.timeout)
-                code = proc.returncode
-            except subprocess.TimeoutExpired:
-                code = None
+            proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                    cwd=cwd, text=True)
+            timer = threading.Timer(self.timeout, proc.kill)
+            timer.start()
+            proc.stdin.write(prompt)
+            proc.stdin.close()
+            for line in proc.stdout:
+                fh.write(line)
+                if self.progress:
+                    for message in describe_event(line, Path(cwd)):
+                        self.progress("  " + message)
+            proc.wait()
+            timed_out = not timer.is_alive()
+            timer.cancel()
+            code = None if timed_out else proc.returncode
         result = {}
         for line in log.read_text().splitlines():
             try:
@@ -98,6 +110,52 @@ class ClaudeAgent:
         return {"ok": code == 0 and not result.get("is_error"), "seconds": round(time.time() - start),
                 "cost_usd": result.get("total_cost_usd"), "turns": result.get("num_turns"),
                 "result": (result.get("result") or ("timed out" if code is None else ""))[-3000:]}
+
+
+VERBS = {"Read": "reads", "Write": "writes", "Edit": "edits"}
+
+
+def describe_event(line: str, cwd: Path) -> list:
+    """What the agent did, in one line per tool call, from one line of Claude Code's
+    stream-json output; also the result of each trace validation it runs."""
+    try:
+        event = json.loads(line)
+    except json.JSONDecodeError:
+        return []
+    out = []
+    content = (event.get("message") or {}).get("content") or []
+    if event.get("type") == "assistant":
+        for b in content:
+            if b.get("type") != "tool_use":
+                continue
+            i, name = b.get("input") or {}, b["name"]
+            if name in VERBS:
+                out.append(f"{VERBS[name]} {_short_path(i.get('file_path', ''), cwd)}")
+            elif name == "Bash":
+                command = re.sub(r"^cd \S+ && ", "", " ".join(i.get("command", "").split()))
+                out.append("runs " + command[:100])
+            elif name in ("Glob", "Grep"):
+                out.append(f"searches for {i.get('pattern', '')}")
+    elif event.get("type") == "user":
+        for b in content:
+            if isinstance(b, dict) and b.get("type") == "tool_result":
+                text = b["content"] if isinstance(b["content"], str) else json.dumps(b["content"])
+                m = re.search(r"(\d+) traces, \d+ steps, (\d+) mismatching", text)
+                if m:
+                    out.append(f"  → validation: {m.group(2)} of {m.group(1)} traces mismatch")
+                elif re.search(r"^lake build failed:", text, re.M):
+                    out.append("  → validation: the model does not build")
+    elif event.get("type") == "result":
+        cost = event.get("total_cost_usd")
+        out.append(f"done ({event.get('num_turns')} turns" + (f", ${cost:.2f})" if cost is not None else ")"))
+    return out
+
+
+def _short_path(path: str, cwd: Path) -> str:
+    try:
+        return str(Path(path).relative_to(cwd))
+    except ValueError:
+        return Path(path).name
 
 
 class Fixture:

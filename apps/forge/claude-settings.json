@@ -1,13 +1,13 @@
 {
-  "_comment": "Copy into the project's .claude/settings.json, replacing REPO with the absolute path of this repository and WS with the application's workspace (python3 -m companion new WS --program PATH). The Stop hook runs the whole check, including any repair of the model by the LLM agent, so it gets a long timeout.",
+  "_comment": "Copy into the project's .claude/settings.json, replacing REPO with the absolute path of this repository. Claude Code runs hooks in the project directory, where `companion init PROGRAM` made .companion/. The Stop hook runs the whole check, including any repair of the model by the LLM agent, so it gets a long timeout.",
   "hooks": {
     "UserPromptSubmit": [
       {"hooks": [{"type": "command",
-                  "command": "PYTHONPATH=REPO python3 -m companion --config WS hook user-prompt"}]}
+                  "command": "PYTHONPATH=REPO python3 -m companion hook user-prompt"}]}
     ],
     "Stop": [
       {"hooks": [{"type": "command", "timeout": 1800,
-                  "command": "PYTHONPATH=REPO python3 -m companion --config WS hook stop"}]}
+                  "command": "PYTHONPATH=REPO python3 -m companion hook stop"}]}
     ]
   }
 }

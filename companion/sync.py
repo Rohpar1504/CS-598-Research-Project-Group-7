@@ -262,6 +262,9 @@ def synthesize(cfg: Config, agent, llm=None, log=print) -> dict:
 
 def _run_agent(cfg: Config, agent, task: str, kind: str) -> dict:
     (cfg.workspace / "TASK.md").write_text(task)
+    if getattr(agent, "progress", None):
+        agent.progress(f"The LLM ({agent.model or 'default model'}) is "
+                       f"{'writing' if kind == 'synthesize' else 'updating'} the model of {cfg.program.name}:")
     log_path = cfg.state_dir / "agent" / f"{time.strftime('%Y%m%d-%H%M%S')}-{kind}.jsonl"
     result = agent.run(START, cwd=cfg.workspace, add_dirs=[cfg.program.parent], log=log_path)
     return {"kind": kind, "log": str(log_path), **result}

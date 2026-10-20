@@ -21,6 +21,7 @@ code keeps it.
 
 import json
 import time
+from pathlib import Path
 
 from companion import workspace
 from companion.config import Config
@@ -223,26 +224,69 @@ def for_agent(report: dict, limit: int = 3) -> str | None:
     return "\n".join(lines).rstrip()
 
 
-def summary(report: dict) -> str:
-    """A short text summary of a report, for people."""
+MARKS = {"checked": ("✓", "32"), "violated": ("✗", "31"), "unchecked": ("?", "33")}
+
+
+def _painter(color: bool):
+    return (lambda code, s: f"\033[{code}m{s}\033[0m") if color else (lambda code, s: s)
+
+
+def summary(report: dict, color: bool = False) -> str:
+    """The report, for people."""
+    paint = _painter(color)
     v = report["validation"]
+    out = [paint("1", f"Turn {report['turn']} · {Path(report['program']).name}")]
     if report.get("model_error"):
-        state = "does NOT work (" + report["model_error"].splitlines()[0][:120] + ")"
+        out.append(paint("31", "The model does not work: " + report["model_error"].splitlines()[0][:160]))
+    elif report["model_matches_code"]:
+        out.append(f"The model matches the code on {v['traces']} traces ({report['seconds']} s).")
     else:
-        state = (f"{'matches' if report['model_matches_code'] else 'does NOT match'} the code "
-                 f"({v['mismatches']} of {v['traces']} traces differ)")
-    out = [f"turn {report['turn']}: model {state}; {report['seconds']}s"]
+        out.append(paint("31", f"The model does not match the code: {v['mismatches']} of {v['traces']} "
+                               "traces differ, so nothing can be checked."))
     for r in report.get("repairs") or []:
-        cost = f", ${r['cost_usd']}" if r.get("cost_usd") is not None else ""
-        why = (f"to reach the situations of {', '.join(r['asked_about_situations'])}"
+        why = (f"so that its search reaches the situations of {', '.join(r['asked_about_situations'])}"
                if r.get("asked_about_situations") else "to follow the code")
-        out.append(f"  model repair ({why}): {r['rounds']} round(s), {'fixed' if r['fixed'] else 'NOT fixed'}"
-                   f" ({r['seconds']}s{cost})")
+        cost = f", ${r['cost_usd']:.2f}" if r.get("cost_usd") is not None else ""
+        out.append(f"The LLM updated the model {why}"
+                   + ("" if r["fixed"] else paint("31", ", without success"))
+                   + f" ({r['rounds']} round{'s' if r['rounds'] != 1 else ''}, {r['seconds']} s{cost}).")
     gaps = report.get("unreached_changes")
     if gaps:
-        out.append(f"  changed code no validation trace reaches: {len(gaps)} statements, e.g. "
-                   + "; ".join(f"{g['file']}:{g['line']}" for g in gaps[:3]))
+        by_file: dict = {}
+        for g in gaps:
+            by_file.setdefault(g["file"], []).append(g["line"])
+        where = ", ".join(f"{f}:{min(ls)}-{max(ls)}" if len(ls) > 1 else f"{f}:{ls[0]}" for f, ls in by_file.items())
+        out.append(paint("33", f"Warning: {len(gaps)} changed statements ({where}) are run by no validation trace, "
+                               "so the model may not cover them and the results below may miss violations."))
+    out.append("")
     for e in report["entries"]:
-        extra = e.get("why") or e.get("found_by") or ""
-        out.append(f"  {e['evidence']:9} {e['id']:4} {e['text']}" + (f"  [{extra}]" if extra else ""))
+        mark, code = MARKS[e["evidence"]]
+        out.append(f"{paint(code, mark)} {e['id']}  {e['text']}")
+        if e["evidence"] == "violated":
+            when = "stated this turn, not met yet" if e.get("new_this_turn") else f"regression: stated in turn {e['turn']}"
+            out.append(f"     Violated ({when}). Reproduced on the real program:")
+            out += [f"       {s}" for s in e["reproduction"]]
+        elif e["evidence"] == "unchecked":
+            out.append(f"     Not checked: {e['why']}.")
+    counts = [f"{sum(e['evidence'] == k for e in report['entries'])} {k}" for k in MARKS
+              if any(e["evidence"] == k for e in report["entries"])]
+    out += ["", ", ".join(counts) + "." if counts else "No constraints yet."]
+    return "\n".join(out)
+
+
+def status(cfg: Config, color: bool = False) -> str:
+    """The ledger, with each constraint's result in the last check."""
+    paint = _painter(color)
+    ledger = Ledger.load(cfg.ledger_path)
+    path = cfg.state_dir / "report.json"
+    last = {e["id"]: e["evidence"] for e in json.loads(path.read_text())["entries"]} if path.exists() else {}
+    if not ledger.entries:
+        return "No constraints yet."
+    out = [paint("1", f"Turn {ledger.turn} · {len(ledger.entries)} constraints")]
+    for e in ledger.entries:
+        mark, code = MARKS.get(last.get(e.id), (" ", "0"))
+        status = "" if e.status == "confirmed" else f"  [{e.status}]"
+        out.append(f"{paint(code, mark)} {e.id}  {e.text}  (turn {e.last_turn}){status}")
+    if last:
+        out.append("\n✓ checked, ✗ violated, ? not checked, in the last `companion check`.")
     return "\n".join(out)

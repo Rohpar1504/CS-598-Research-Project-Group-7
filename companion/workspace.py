@@ -22,6 +22,7 @@ The model's contract: in namespace <NS>, types `State`, `Action`, `Out` and `Obs
 """
 
 import json
+import os
 import re
 import shutil
 import sys
@@ -110,7 +111,7 @@ def create(ws: Path, program: Path, app: str | None = None, namespace: str | Non
         raise FileExistsError(f"{ws} already holds a workspace")
     app = app or program.stem
     config = {"app": app, "workspace": True, "namespace": namespace or namespace_for(app),
-              "program": str(program), "check": {**DEFAULT_CHECK, **(check or {})},
+              "program": os.path.relpath(program, ws), "check": {**DEFAULT_CHECK, **(check or {})},
               "agent": {**DEFAULT_AGENT, **(agent or {})}}
     if sources:
         config["sources"] = sources
