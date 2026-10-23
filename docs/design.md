@@ -9,7 +9,7 @@ Decided:
 - The companion runs once per agent turn.
 - The companion does not depend on the application's language.
 
-The evaluation is in [evaluation.md](evaluation.md). The forge prototype that tested this design is in [feasibility-study.md](feasibility-study.md), and the LLM-written models in [synthesis-and-repair.md](synthesis-and-repair.md).
+The approach is stated formally, with what each result guarantees, in [approach.md](approach.md). The evaluation is in [evaluation.md](evaluation.md). The forge prototype that tested this design is in [feasibility-study.md](feasibility-study.md), and the LLM-written models in [synthesis-and-repair.md](synthesis-and-repair.md).
 
 ## 1. Goal and scope
 
