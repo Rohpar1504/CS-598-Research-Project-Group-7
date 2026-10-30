@@ -213,7 +213,7 @@ A2 says that $\alpha$ keeps everything the program's future behavior depends on.
 
 **Corollary.** With the defaults $d = 4$ and $k = 8$, Proposition 2 is backed by validation only up to depth 5. Steps 6 to 8 of the search rely on random traces and on A2 extending further. They are covered as well if the area's reachable set has stopped growing by depth 4 ($\mathrm{Reach}_{\le 4} = \mathrm{Reach}_{\le 8}$), because then $\mathrm{Cov}_4$ already covers every transition the search examines. Whether forge's areas stop growing that early has not been measured (§9, item 1).
 
-**Proposition 3 (proofs, design only).** If Lean proves that every action preserves $\varphi$ on the model, and $M \models_D A^*$, then every reachable state of the program satisfies $\varphi$, for traces of any length. In practice only $M \models_D T_t$ is established, so "proved" means: true of the model for traces of any length, and the model conforms on $T_t$. The forge model has 7 hand-written proofs (`lean/Forge/Proofs.lean`), but no proof attempts run in the per-turn pipeline.
+**Proposition 3 (proofs, design only).** If Lean proves that every action preserves $\varphi$ on the model, and $M \models_D A^*$, then every reachable state of the program satisfies $\varphi$, for traces of any length. In practice only $M \models_D T_t$ is established, so "proved" means: true of the model for traces of any length, and the model conforms on $T_t$. The forge model has 7 hand-written proofs (`apps/forge/lean/Forge/Proofs.lean`), but no proof attempts run in the per-turn pipeline.
 
 ## 6. Evidence levels
 

@@ -16,7 +16,7 @@ keeps doing what the code does as the code changes.
   widen the search, and the rule is then really checked.
 
 The agent is a stand-in that edits the workspace's files as an LLM would. The model it
-starts from (or "writes") is the hand-built forge model of lean/Forge.
+starts from (or "writes") is the hand-built forge model of apps/forge.
 """
 
 import json

@@ -6,13 +6,9 @@ Code for the CS 598 research project of Group 7 (Rohan and Jamie): a Lean compan
 
 ```
 docs/                     design, evaluation plan, and the studies so far
-lean/                     Lake project (Lean 4.34.1, no Mathlib)
-  Companion/Core.lean     generic: model interface, replay, breadth-first search, trace selection
-  Companion/Cli.lean      generic JSON command line for an app's model
-  Forge/                  model of SlopCodeBench's forge app: Model, Props, Proofs, Variants
-                          (models that follow seeded bugs), App (wiring); Main builds forge-model
-                          (study, hand-written properties), CompanionMain builds forge-companion
-                          (properties from the ledger, generated into Forge/Ledger.lean)
+lean/                     the companion's Lean core, a Lake project (Lean 4.34.1, no Mathlib)
+  Companion/Core.lean     model interface, replay, breadth-first search, trace selection
+  Companion/Cli.lean      JSON command line for an app's model
 companion/                the companion (Python)
   __main__.py             command line: init, synthesize, tell, check, status, reset, hook
                           (and validate, build for debugging)
@@ -33,8 +29,9 @@ companion/                the companion (Python)
                           programs (about 10x cheaper than a new process), recording which
                           lines each run executes; a new process otherwise
   abstraction.py          how an adapter marks output the model's types cannot express
-  config.py, lean.py, adapters/forge.py
-apps/forge/               the companion's config for forge, an example ledger, hook settings
+  config.py, lean.py
+apps/forge/               SlopCodeBench's forge app, the application the tool was first evaluated
+                          on: its hand-built reference model and adapter (see its README)
 examples/booking/         smallest end-to-end example: a 60-line app, with Haiku (run.sh)
 tests/                    what the companion must do, checked on the real forge program
 studies/
@@ -52,7 +49,7 @@ command.
 
 ```
 studies/preliminary/fetch_data.sh && studies/feasibility/fetch_data.sh   # benchmarks into data/
-(cd lean && lake build)                                                  # also checks the proofs
+(cd apps/forge/lean && lake build)                                       # also checks the proofs
 
 python3 studies/preliminary/extract_regressions.py                       # preliminary study
 python3 studies/preliminary/summarize.py
@@ -97,20 +94,10 @@ companion status                    # the constraints and their last result
 no validation trace reaches, the LLM updates the model before the constraints are checked
 (`--no-llm` skips this; `-v` shows each step). A constraint is only reported checked if the
 search reaches the situation it is about. In Claude Code, the hooks run `tell` and `check`
-after every turn (`apps/forge/claude-settings.json`). The LLM is Claude Haiku 5.5 unless
+after every turn (`docs/claude-settings.example.json`). The LLM is Claude Haiku 5.5 unless
 `init --model` names another; it is recorded in `.companion/companion.json` (`agent` and
 `check.llm`).
 
 The smallest example, the whole loop with Haiku in about 4 minutes: [examples/booking](examples/booking/README.md).
 
-The hand-built forge model has a fixed config, which `check` cannot update:
-
-```
-companion --workspace apps/forge/companion.json reset --from apps/forge/example-ledger.json
-companion --workspace apps/forge/companion.json check    # --program PATH checks another version
-```
-
-The first `check` of the forge session takes about 20 s (125 CPU-seconds, 6 workers). Later
-checks rerun only the traces whose program lines changed: about 3 s after an edit, 2 s with no
-change. Session state, including that cache, goes to `.companion/` (not in git). Not built yet: triage of changes of mind, confirmation
-questions, and proofs per constraint.
+Not built yet: triage of changes of mind, confirmation questions, and proofs per constraint.

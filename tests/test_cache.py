@@ -13,7 +13,7 @@ import time
 import unittest
 from pathlib import Path
 
-from tests.support import WORKERS, FORGE_MODEL, ROOT, apply, edits, program_copy, requires_forge, trace_set
+from tests.support import FORGE, WORKERS, FORGE_MODEL, apply, edits, program_copy, requires_forge, trace_set
 
 
 @requires_forge
@@ -32,13 +32,13 @@ class CachedValidationTest(unittest.TestCase):
         self.cache_path = self.dir / "cache.json"
 
     def validate(self, cached: bool):
-        from companion.adapters.forge import ForgeAdapter
+        from apps.forge.adapter import ForgeAdapter
         from companion.trace_validation import Stats, validate
         from companion.validation_cache import ValidationCache
         cache = None
         if cached:
             cache = ValidationCache(self.cache_path, [self.program, self.program.with_suffix(".py")],
-                                    ROOT / "companion" / "adapters" / "forge.py")
+                                    FORGE / "adapter.py")
         stats = Stats()
         program = self.program
         results = validate(lambda: ForgeAdapter(program), self.model, self.traces, workers=WORKERS,

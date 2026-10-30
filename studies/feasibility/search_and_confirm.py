@@ -1,7 +1,7 @@
 """The companion's loop on the forge model.
 
 For the unmodified checkpoint 8 code and for three seeded bugs (with the model updated by
-hand to follow each, see lean/Forge/Variants.lean):
+hand to follow each, see apps/forge/lean/Forge/Variants.lean):
 
 1. Trace-validate the model against the code (skipped for the reference: see
    validate.py).
@@ -17,13 +17,13 @@ import json
 import time
 from pathlib import Path
 
-from companion.adapters.forge import ForgeAdapter
+from apps.forge.adapter import ForgeAdapter
 from companion.lean import LeanModel
 from companion.trace_validation import default_workers, validate, validate_trace
 from studies.feasibility.validate import AREAS, traces_for
 
 ROOT = Path(__file__).resolve().parents[2]
-EXE = ROOT / "lean" / ".lake" / "build" / "bin" / "forge-model"
+EXE = ROOT / "apps" / "forge" / "lean" / ".lake" / "build" / "bin" / "forge-model"
 REFERENCE = ROOT / "data" / "scb-problems" / "forge" / "solutions" / "checkpoint_8" / "forge"
 MUTANTS = ROOT / "data" / "forge-mutants"
 RESULTS = Path(__file__).parent / "results"
