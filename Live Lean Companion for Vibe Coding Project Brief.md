@@ -209,6 +209,7 @@ Each piece of the companion has a neighbour. No published work puts them togethe
 | --- | --- |
 | [README.md](README.md) | Repository layout and how to run things |
 | [docs/design.md](docs/design.md) | The tool's design |
+| [docs/approach.md](docs/approach.md) | The approach stated formally (definitions, guarantees and their assumptions), and how the code compares with report 1 |
 | [docs/evaluation.md](docs/evaluation.md) | The evaluation plan |
 | [docs/preliminary-study.md](docs/preliminary-study.md) | What regressions agents make (EvoCode-Bench) |
 | [docs/feasibility-study.md](docs/feasibility-study.md) | The forge prototype and its results |
