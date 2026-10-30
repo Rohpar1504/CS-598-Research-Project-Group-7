@@ -19,12 +19,12 @@ The target is SlopCodeBench's `forge`: units, their activation and the capabilit
 | Component | Lines (code only) | What it does |
 | --- | --- | --- |
 | `lean/Companion/Core.lean` | 80 | Generic: the `Model` structure, replay, breadth-first search for property violations, picking traces to validate |
-| `lean/Forge/Model.lean` | 150 | State, 7 kinds of action (including invalid inputs and list filters), outputs, `step`, observation, two search scopes |
-| `lean/Forge/Props.lean` | 51 | 7 properties of the kind a developer would state (below) |
-| `lean/Forge/Proofs.lean` | 28 | 4 theorems about `step` |
-| `lean/Forge/Variants.lean` | 30 | Models that follow two of the seeded bugs |
-| `lean/Forge/Main.lean` | 47 | JSON command line: `alphabet`, `paths`, `replay`, `check`, `eval` |
-| `companion/adapters/forge.py` | 162 | Turns abstract actions into real commands, and real output into the model's terms |
+| `apps/forge/lean/Forge/Model.lean` | 150 | State, 7 kinds of action (including invalid inputs and list filters), outputs, `step`, observation, two search scopes |
+| `apps/forge/lean/Forge/Props.lean` | 51 | 7 properties of the kind a developer would state (below) |
+| `apps/forge/lean/Forge/Proofs.lean` | 28 | 4 theorems about `step` |
+| `apps/forge/lean/Forge/Variants.lean` | 30 | Models that follow two of the seeded bugs |
+| `apps/forge/lean/Forge/Main.lean` | 47 | JSON command line: `alphabet`, `paths`, `replay`, `check`, `eval` |
+| `apps/forge/adapter.py` | 162 | Turns abstract actions into real commands, and real output into the model's terms |
 | `companion/trace_validation.py` | 61 | Runs traces on the code and on the model, compares them, evaluates properties on the real run |
 
 These are the properties. Each is a Lean predicate on an observed transition, so the same predicate runs on the model and on the real application:
