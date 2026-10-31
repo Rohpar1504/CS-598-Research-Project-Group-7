@@ -78,6 +78,25 @@ class ExtractTest(unittest.TestCase):
         self.assertEqual(entry.status, "retired")
         self.assertEqual(entry.last_turn, 2)
 
+    def test_the_extractor_may_supersede_a_rule_with_a_new_one(self):
+        from companion.extract import SYSTEM, extract
+        self.assertIn('"op": "supersede"', SYSTEM)
+        extract(self.cfg, "first", Answers({"ops": [{"op": "add", "text": "old rule", "quote": "q", "predicate": GOOD}]}))
+        extract(self.cfg, "instead, ...", Answers({"ops": [
+            {"op": "add", "text": "new rule", "quote": "instead", "predicate": GOOD},
+            {"op": "supersede", "id": "c1", "quote": "instead", "reason": "replaced by c2"}]}))
+        ledger = self.ledger()
+        self.assertEqual((ledger.get("c1").status, ledger.get("c2").status), ("superseded", "proposed"))
+
+    def test_the_extractor_sees_a_rule_that_could_not_be_formalized(self):
+        from companion.extract import extract
+        extract(self.cfg, "first", Answers({"ops": [{"op": "add", "text": "stated but broken", "quote": "q", "predicate": BAD}]},
+                                           {"ops": []}))
+        llm = Answers({"ops": [{"op": "retire", "id": "c1", "quote": "drop it", "reason": "dropped"}]})
+        extract(self.cfg, "drop that rule", llm)
+        self.assertIn("stated but broken", llm.prompts[0])
+        self.assertEqual(self.ledger().get("c1").status, "retired")
+
     def test_a_message_with_no_constraint_changes_nothing(self):
         from companion.extract import extract
         extract(self.cfg, "add a list command please", Answers({"ops": []}))

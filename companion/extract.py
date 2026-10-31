@@ -1,8 +1,8 @@
-"""`companion extract`: turn a developer message into changes to the constraint ledger.
+"""`companion tell`: turn a developer message into changes to the constraint ledger.
 
 The LLM sees the app's vocabulary (the Lean types of observations, actions and outputs,
-and the helper functions), the active constraints, and the message. It answers with
-operations: add, revise or retire. New and revised predicates are typechecked in Lean; a
+and the helper functions), the constraints so far, and the message. It answers with
+operations: add, revise, supersede or retire. New and revised predicates are typechecked in Lean; a
 predicate that fails gets one repair round with Lean's error, and otherwise stays
 `unformalized` (recorded, not checked).
 """
@@ -25,8 +25,10 @@ not contain, what an action must or must not do, which requests are rejected, wh
 like. Do not record one-off tasks ("add a list command"), implementation choices, or opinions. A \
 message may state no constraint at all; then return no operations.
 
-When a message changes or contradicts an earlier constraint, revise or retire that constraint \
-instead of adding a conflicting one.
+When a message changes or contradicts an earlier constraint, never leave both in force: revise it \
+if the same rule now says something else, supersede it if a new rule you add in the same answer \
+replaces it, and retire it if it simply no longer applies. A constraint with status "unformalized" \
+is one whose predicate could not be typechecked: it still counts as stated.
 
 Answer with a single JSON object and nothing else:
 {"ops": [
@@ -36,6 +38,7 @@ Answer with a single JSON object and nothing else:
    "situation_predicate": "<Lean term>"},
   {"op": "revise", "id": "<existing id>", "text": "...", "quote": "...", "predicate": "<Lean term>",
    "situation": "...", "situation_predicate": "<Lean term>"},
+  {"op": "supersede", "id": "<existing id>", "quote": "...", "reason": "..."},
   {"op": "retire", "id": "<existing id>", "quote": "...", "reason": "..."}
 ]}
 
@@ -67,10 +70,11 @@ def namespace(cfg: Config) -> str:
 
 
 def prompt(cfg: Config, ledger: Ledger, message: str) -> str:
-    active = [{"id": e.id, "text": e.text, "kind": e.kind, "predicate": e.predicate,
-               "situation": e.situation, "situation_predicate": e.situation_predicate} for e in ledger.active()]
+    known = [{"id": e.id, "text": e.text, "kind": e.kind, "status": e.status, "predicate": e.predicate,
+              "situation": e.situation, "situation_predicate": e.situation_predicate}
+             for e in ledger.entries if e.active or e.status == "unformalized"]
     return (f"VOCABULARY (Lean, namespace {namespace(cfg)}):\n\n{vocabulary(cfg)}\n\n"
-            f"ACTIVE CONSTRAINTS:\n{json.dumps(active, indent=1)}\n\n"
+            f"CONSTRAINTS:\n{json.dumps(known, indent=1)}\n\n"
             f"TURN {ledger.turn}. THE DEVELOPER'S MESSAGE:\n{message}\n")
 
 

@@ -75,6 +75,17 @@ class HooksTest(unittest.TestCase):
         self.assertNotIn("decision", out)
         self.assertIn("companion failed", out["systemMessage"])
 
+    def test_when_extraction_fails_the_check_still_runs_and_the_message_is_kept(self):
+        from companion.hooks import stop, user_prompt
+        self.fixture.write_text(json.dumps(["this is not the JSON the extractor must answer with"]))
+        cfg = quick_config(self.dir, ledger=EXAMPLE_LEDGER)
+        user_prompt(cfg, {"prompt": "a rule"})
+        out = stop(cfg, {"stop_hook_active": False})
+        self.assertEqual(out["decision"], "block")                       # broken rules are still reported
+        self.assertIn("extraction failed", out["systemMessage"])
+        rows = [json.loads(l) for l in (cfg.state_dir / "messages.jsonl").read_text().splitlines()]
+        self.assertEqual([r["extracted"] for r in rows], [False])
+
     def test_the_turns_messages_become_constraints_before_the_check(self):
         from companion.hooks import stop, user_prompt
         from companion.ledger import Ledger

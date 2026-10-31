@@ -123,6 +123,16 @@ class InvalidationRulesTest(unittest.TestCase):
         cache.save()
         return out
 
+    def record_with(self, sources: list, arg: str) -> None:
+        from companion import runner
+        from companion.trace_validation import Record
+        from companion.validation_cache import ValidationCache
+        with runner.recording() as rec:
+            out = runner.run(self.program, [arg]).stdout
+        cache = ValidationCache(self.path, sources, self.adapter_file)
+        cache.put(arg, Record([out], [None], None, {f: sorted(l) for f, l in rec.lines.items()}, "changes"))
+        cache.save()
+
     def reusable_after(self, new_source: str, arg: str = "c") -> bool:
         from companion import runner
         from companion.validation_cache import ValidationCache
@@ -150,6 +160,15 @@ class InvalidationRulesTest(unittest.TestCase):
 
     def test_a_change_at_module_level_reruns_everything(self):
         self.assertFalse(self.reusable_after(self.PROGRAM.replace("LIMIT = 10", "LIMIT = 11")))
+
+    def test_a_change_at_module_level_of_another_file_reruns_everything(self):
+        from companion.validation_cache import ValidationCache
+        other = self.dir / "other.py"
+        other.write_text("LIMIT = 1\n")
+        sources = [self.program, other]
+        self.record_with(sources, "c")
+        other.write_text("LIMIT = 2\n")
+        self.assertIsNone(ValidationCache(self.path, sources, self.adapter_file).get("c", "changes"))
 
     def test_a_changed_adapter_reruns_everything(self):
         from companion.validation_cache import ValidationCache

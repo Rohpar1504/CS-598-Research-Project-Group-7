@@ -7,6 +7,7 @@ new process, only faster, and it can record which lines of the program each run 
 import os
 import re
 import subprocess
+import sys
 import tempfile
 import textwrap
 import time
@@ -118,6 +119,70 @@ class RunnerTest(unittest.TestCase):
         result = runner.run(broken, [])
         self.assertNotEqual(result.code, 0)
         self.assertIn("SyntaxError", result.stderr)
+
+    def test_a_main_that_reads_sys_argv_itself_runs_as_in_a_new_process(self):
+        program = self.write("noargs.py", """
+            import sys
+            def main():
+                print(sys.argv[1:]); return 4
+            if __name__ == "__main__":
+                sys.exit(main())
+            """)
+        a, b = runner.run(program, ["x"]), self.in_new_process(program, ["x"])
+        self.assertEqual((a.code, a.stdout), (b.code, b.stdout))
+        self.assertEqual(a.stdout, "['x']\n")
+        with runner.recording() as rec:
+            runner.run(program, ["x"])
+        self.assertTrue(rec.complete)
+
+    def test_a_program_of_several_files_is_not_run_as_if_it_had_one(self):
+        self.write("helper_for_test.py", "def value():\n    return 'one'\n")
+        program = self.write("uses_helper.py", """
+            import sys
+            import helper_for_test
+            def main(argv):
+                print(helper_for_test.value()); return 0
+            if __name__ == "__main__":
+                sys.exit(main(sys.argv[1:]))
+            """)
+        sys.path.insert(0, str(self.dir))          # as when the hook runs in the project directory
+        try:
+            with runner.recording() as rec:
+                self.assertEqual(runner.run(program, []).stdout, "one\n")
+        finally:
+            sys.path.remove(str(self.dir))
+            sys.modules.pop("helper_for_test", None)
+        self.assertFalse(rec.complete)             # only one file would be traced: not a footprint
+
+    def test_lines_are_recorded_in_functions_that_have_no_name_in_the_module(self):
+        program = self.write("wrapped.py", """
+            import functools
+            def logged(f):
+                @functools.wraps(f)
+                def wrapper(*a):
+                    return f(*a)
+                return wrapper
+            @logged
+            def handler():
+                return "handler"
+            class C:
+                @staticmethod
+                def fixed():
+                    return "fixed"
+                @classmethod
+                def made(cls):
+                    return "made"
+                @property
+                def shown(self):
+                    return "shown"
+            def main(argv):
+                print(handler(), C.fixed(), C.made(), C().shown); return 0
+            """)
+        with runner.recording() as rec:
+            runner.run(program, [])
+        ran = {program.read_text().splitlines()[n - 1].strip() for n in rec.lines[str(program)]}
+        for line in ('return "handler"', 'return "fixed"', 'return "made"', 'return "shown"'):
+            self.assertIn(line, ran)
 
     def test_records_the_lines_each_run_executes(self):
         program = self.write("branches.py", """

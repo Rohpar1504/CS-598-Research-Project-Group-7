@@ -156,6 +156,37 @@ class SyncTest(unittest.TestCase):
         self.assertEqual(self.check(cfg, agent)["repairs"], [])       # not asked again
         self.assertEqual(len(agent.calls), 1)
 
+    def test_every_repair_round_is_told_about_the_unreached_code(self):
+        cfg = forge_workspace(self.dir / "ws", self.program, ledger=EXAMPLE_LEDGER, transition_depth=3)
+        self.check(cfg)
+        apply(self.program, edits("bind-no-duplicate-guard") + [RESERVED])
+        agent = StandInAgent(do_nothing, do_nothing)
+        self.check(cfg, agent)
+        self.assertEqual(len(agent.calls), 2)
+        for call in agent.calls:
+            self.assertIn("Changed code that no validation trace reaches", call["task"])
+
+    def test_a_repair_is_shown_the_situations_whose_names_it_must_keep(self):
+        cfg = forge_workspace(self.dir / "ws", self.program, ledger=ledger_file(self.dir, TAG_UPDATE_REJECTED))
+        self.check(cfg)
+        apply(self.program, [RESERVED])
+        agent = StandInAgent(do_nothing)
+        self.check(cfg, agent)
+        self.assertIn("fun t => t.action.cmd == .tagUpdate", agent.calls[0]["task"].split("## The developer's rules")[1])
+
+    def test_unreached_code_stays_in_the_report_when_the_check_runs_a_second_pass(self):
+        ledger = ledger_file(self.dir, TAG_UPDATE_REJECTED)
+        cfg = forge_workspace(self.dir / "ws", self.program, ledger=ledger)
+        from companion.sync import save_baseline
+        save_baseline(cfg)
+        apply(self.program, [RESERVED])
+        report = self.check(cfg, StandInAgent(do_nothing, do_nothing))      # the second pass: situations
+        self.assertTrue(report["unreached_changes"])
+
+    def test_a_new_workspace_validates_to_the_depth_the_approach_states(self):
+        from companion import workspace
+        self.assertEqual(workspace.DEFAULT_CHECK["transition_depth"], 4)
+
     def test_constraints_the_model_could_not_express_are_tried_again_after_it_changes(self):
         ledger = json.loads(EXAMPLE_LEDGER.read_text())
         ledger["entries"] = [e for e in ledger["entries"] if e["id"] in ("c1", "c3")]

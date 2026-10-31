@@ -66,13 +66,14 @@ def changed_lines(old: str, new: str) -> set:
 def uncovered_changes(baseline: dict, current: dict, coverage: dict | None, limit: int = 200) -> list | None:
     """The changed statements of the program (source text `current`, path -> text, against
     `baseline`) that no trace executed (`coverage`: path -> executed lines). Each is
-    {"file", "line", "text"}. None if coverage is unknown (some run was not recorded)."""
+    {"file", "line", "text"}. A file that is not in `baseline` is new, all of it. None if the
+    code changed and coverage is unknown (some run was not recorded)."""
     if coverage is None:
-        return None
+        return None if any(baseline.get(p) != new for p, new in current.items()) else []
     gaps = []
     for path, new in sorted(current.items()):
-        old = baseline.get(path)
-        if old is None or old == new:
+        old = baseline.get(path, "")
+        if old == new:
             continue
         stmts = _statements(new)
         if stmts is None:

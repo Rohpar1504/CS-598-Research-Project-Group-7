@@ -7,7 +7,9 @@
   real code, block the stop and give the agent the reproductions. The retry budget is one:
   when the agent stops again after being blocked (`stop_hook_active`), it is let through.
 
-Companion failures never block the agent; they are reported to the developer instead.
+Companion failures never block the agent; they are reported to the developer instead. A
+message that could not be turned into constraints does not stop the check: it is tried again
+at the next stop.
 See docs/claude-settings.example.json for how the hooks are registered.
 """
 
@@ -64,7 +66,11 @@ def _extract_pending(cfg: Config) -> list:
         return ["extraction skipped: no LLM backend"]
     notes = []
     for r in pending:
-        notes += extract(cfg, r["prompt"], llm, turn=r["turn"])
+        try:
+            notes += extract(cfg, r["prompt"], llm, turn=r["turn"])
+        except Exception as e:
+            notes.append(f"extraction failed for turn {r['turn']}: {e}")
+            continue
         r["extracted"] = True
-    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+        path.write_text("".join(json.dumps(r) + "\n" for r in rows))
     return notes

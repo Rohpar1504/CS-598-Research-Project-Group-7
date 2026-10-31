@@ -10,13 +10,16 @@ about 20 ms for a new Python process. Each run is still a separate process that 
 the module as loaded (any state lives on disk), so the program behaves as it would when
 started fresh. The module is reloaded when its source file changes.
 
+`main` may take the arguments, or read `sys.argv` itself (`main()`).
+
 A new process is used instead when the program cannot be run this way: it is not Python, it
-has no top-level `main(argv)`, or it does not load (a syntax error, say: the new process then
-shows the program's real failure). Whether there is a `main` is decided from the source before
-anything is loaded, so a plain script is never executed inside this process. Loading a module
-does run its module-level code once here; programs whose module-level code has side effects
-beyond definitions should set `COMPANION_RUNNER=subprocess`. `COMPANION_RUNNER=subprocess` forces new processes, for programs
-whose module-level code must run on every start.
+has no top-level `main`, it imports files of its own (only one file is loaded and traced here,
+and a sibling module would be shared with this process), or it does not load (a syntax error,
+say: the new process then shows the program's real failure). This is decided from the source
+before anything is loaded, so a plain script is never executed inside this process. Loading a
+module does run its module-level code once here; programs whose module-level code has side
+effects beyond definitions, or must run on every start, should set
+`COMPANION_RUNNER=subprocess`, which forces new processes.
 
 Inside `with recording() as rec:`, each run also records which lines of the program's code it
 executed (`rec.lines`: file -> set of line numbers). `rec.complete` is False if some run could
@@ -24,7 +27,9 @@ not be recorded (it used a new process). `calls` counts the runs of this process
 """
 
 import ast
+import gc
 import importlib.util
+import inspect
 import io
 import json
 import os
@@ -35,6 +40,7 @@ import sys
 import threading
 import time
 import traceback
+import types
 import warnings
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -107,8 +113,8 @@ def _load(program: Path):
         if cached is not None and cached[0] == stamp:
             return cached[1]
         try:
-            if not _defines_main(source):
-                raise ValueError("no top-level main")
+            if not _can_fork(source):
+                raise ValueError("no top-level main, or it imports files of its own")
             spec = importlib.util.spec_from_file_location(f"_program_{abs(hash((str(source), stamp)))}", source)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
@@ -119,15 +125,28 @@ def _load(program: Path):
         return loaded
 
 
-def _defines_main(source: Path) -> bool:
-    """True if the file defines a top-level function `main` (checked without running it)."""
+def _can_fork(source: Path) -> bool:
+    """True if the file defines a top-level function `main` and imports none of the files
+    around it (checked without running it)."""
     tree = ast.parse(source.read_text())
-    return any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == "main" for n in tree.body)
+    if not any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == "main" for n in tree.body):
+        return False
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.level:
+            return False
+        names = ([a.name for a in node.names] if isinstance(node, ast.Import)
+                 else [node.module] if isinstance(node, ast.ImportFrom) else [])
+        for name in names:
+            own = source.parent / name.split(".")[0]
+            if own.with_suffix(".py").exists() or own.is_dir():
+                return False
+    return True
 
 
 def _code_objects(module) -> list:
     """Every code object defined in the program's module: functions, methods, nested
-    functions."""
+    functions. They are found among all function objects, not the module's names: a decorated
+    function, a property or a static method is not reachable by name."""
     found, seen = [], set()
 
     def visit(code):
@@ -138,11 +157,9 @@ def _code_objects(module) -> list:
                 if hasattr(c, "co_code"):
                     visit(c)
 
-    for value in list(vars(module).values()):
-        for f in ([value, *vars(value).values()] if isinstance(value, type) else [value]):
-            code = getattr(f, "__code__", None)
-            if code is not None and code.co_filename == module.__file__:
-                visit(code)
+    for f in gc.get_objects():
+        if isinstance(f, types.FunctionType) and f.__code__.co_filename == module.__file__:
+            visit(f.__code__)
     return found
 
 
@@ -167,6 +184,14 @@ def _trace_lines(codes: list, lines: set) -> None:
         mon.set_local_events(mon.COVERAGE_ID, code, mon.events.LINE)
 
 
+def _call_main(main, args: list):
+    try:
+        inspect.signature(main).bind(args)
+    except TypeError:
+        return main()                  # it reads sys.argv itself
+    return main(args)
+
+
 def _child(loaded, argv: list, stdin: str, out_w: int, err_w: int, cov_w: int | None) -> None:
     module, codes = loaded
     code, lines = 1, set()
@@ -179,7 +204,7 @@ def _child(loaded, argv: list, stdin: str, out_w: int, err_w: int, cov_w: int | 
         sys.argv = argv
         if cov_w is not None:
             _trace_lines(codes, lines)
-        code = module.main(argv[1:])
+        code = _call_main(module.main, argv[1:])
     except SystemExit as e:
         code = e.code if isinstance(e.code, int) else (0 if e.code is None else 1)
     except BaseException:

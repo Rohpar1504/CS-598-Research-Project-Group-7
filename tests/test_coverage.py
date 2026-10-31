@@ -79,8 +79,16 @@ class CoverageTest(unittest.TestCase):
     def test_an_unchanged_program_has_nothing_to_report(self):
         self.assertEqual(gaps(OLD, set()), [])
 
+    def test_a_new_file_is_new_code(self):
+        new = {"p.py": OLD, "q.py": "def release():\n    return 1\n"}
+        self.assertEqual([(g["file"], g["line"]) for g in uncovered_changes({"p.py": OLD}, new, {"p.py": set()})],
+                         [("q.py", 2)])
+
     def test_unknown_coverage_is_not_reported_as_full_coverage(self):
         self.assertIsNone(uncovered_changes({"p.py": OLD}, {"p.py": OLD + "\n"}, None))
+
+    def test_with_no_change_it_does_not_matter_that_coverage_is_unknown(self):
+        self.assertEqual(uncovered_changes({"p.py": OLD}, {"p.py": OLD}, None), [])
 
 
 if __name__ == "__main__":

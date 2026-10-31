@@ -27,7 +27,7 @@ from companion import workspace
 from companion.config import Config
 from companion.lean import LeanModel
 from companion.ledger import Ledger, is_probe
-from companion.sync import add_validation_traces, build, repair, sync   # noqa: F401  (build: for callers)
+from companion.sync import add_validation_traces, baseline, build, gaps, repair, sync   # noqa: F401  (build: for callers)
 from companion.trace_validation import validate_trace
 
 
@@ -58,6 +58,7 @@ def check(cfg: Config, log=print, agent=None, llm=None) -> dict:
     if cfg.workspace and not workspace.has_model(cfg):
         raise RuntimeError(f"{cfg.workspace} has no model yet: run `companion synthesize` first")
     repairs = []
+    base = baseline(cfg)        # the turn's changes are measured from here: sync may move the baseline
     for attempt in range(2):
         s = sync(cfg, agent, llm, log)
         if s.repair:
@@ -129,6 +130,7 @@ def check(cfg: Config, log=print, agent=None, llm=None) -> dict:
         if not (again and agent is not None and cfg.workspace and attempt == 0):
             break
 
+    left = gaps(cfg, v, base)
     repaired = any(r["fixed"] for r in repairs)
     failed_repair = bool(repairs) and not v.matches
     entries = []
@@ -156,8 +158,10 @@ def check(cfg: Config, log=print, agent=None, llm=None) -> dict:
                             f"of search in the areas {', '.join(model.areas())}"}
             if e.id in reached:
                 ev["detail"] += f"; its situation is reached in area {reached[e.id][0]} in {reached[e.id][1]} steps"
-            if s.gaps:
-                ev["detail"] += f"; {len(s.gaps)} changed statements are reached by no trace"
+            if left is None:
+                ev["detail"] += "; no coverage was recorded, so changed code may be reached by no trace"
+            elif left:
+                ev["detail"] += f"; {len(left)} changed statements are reached by no trace"
         entries.append({"id": e.id, "text": e.text, "quote": e.provenance[-1].get("quote", "") if e.provenance else "",
                         "turn": e.last_turn, **ev})
 
@@ -168,7 +172,7 @@ def check(cfg: Config, log=print, agent=None, llm=None) -> dict:
         "model_error": v.error,
         "model_repaired": repaired,
         "repairs": repairs,
-        "unreached_changes": s.gaps,
+        "unreached_changes": left,
         "validation": {"traces": len(results), "steps": sum(len(r.trace) for r in results),
                        "reused": st.reused, "steps_run": st.steps_run,
                        "program_runs": st.program_calls, "seconds": st.seconds,
@@ -251,6 +255,9 @@ def summary(report: dict, color: bool = False) -> str:
                    + ("" if r["fixed"] else paint("31", ", without success"))
                    + f" ({r['rounds']} round{'s' if r['rounds'] != 1 else ''}, {r['seconds']} s{cost}).")
     gaps = report.get("unreached_changes")
+    if gaps is None and not report.get("model_error"):
+        out.append(paint("33", "Warning: the code changed, but this program's runs record no coverage (it is not a "
+                               "single Python file with a `main`), so changed code may be reached by no trace."))
     if gaps:
         by_file: dict = {}
         for g in gaps:

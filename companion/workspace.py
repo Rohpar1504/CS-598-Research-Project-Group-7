@@ -90,7 +90,7 @@ from companion.sync import validate_main  # noqa: E402
 sys.exit(validate_main(Path(__file__).resolve().parent, quick="--quick" in sys.argv))
 '''
 
-DEFAULT_CHECK = {"transition_depth": 3, "random_traces": 200, "random_seed": 0, "search_depth": 8}
+DEFAULT_CHECK = {"transition_depth": 4, "random_traces": 200, "random_seed": 0, "search_depth": 8}
 DEFAULT_AGENT = {"model": None, "effort": None, "budget_usd": 5.0, "repair_rounds": 2}
 
 

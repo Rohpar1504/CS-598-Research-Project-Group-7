@@ -176,11 +176,12 @@ def save_baseline(cfg: Config) -> None:
     (cfg.state_dir / "synced.json").write_text(json.dumps(current_sources(cfg)))
 
 
-def gaps(cfg: Config, v: Validation) -> list | None:
-    """Changed code since the baseline that no validation trace ran; None if unknown."""
+def gaps(cfg: Config, v: Validation, base: dict | None = None) -> list | None:
+    """Changed code since `base` (by default the baseline) that no validation trace ran; None
+    if unknown."""
     if v.error:
         return None
-    base = baseline(cfg)
+    base = base or baseline(cfg)
     if base is None:
         return []
     return uncovered_changes(base, current_sources(cfg), v.stats.coverage)
@@ -221,21 +222,21 @@ def repair(cfg: Config, agent, llm, v: Validation, g: list | None, log=print, un
     saved = workspace.save_model(cfg)
     attempts, asked = [], g
     for n in range(rounds):
-        prompt = repair_prompt(cfg, v, asked if n == 0 else None, n, unreached if n == 0 else None)
+        prompt = repair_prompt(cfg, v, asked, n, unreached)
         log(f"repairing the model (round {n + 1} of {rounds}): "
             + ("it does not build" if v.error else f"{len(v.mismatched)} mismatching traces")
-            + (f", {len(asked)} unreached changed statements" if n == 0 and asked else "")
-            + (f", {len(unreached)} rules whose situation the search never reaches" if n == 0 and unreached else ""))
+            + (f", {len(asked)} unreached changed statements" if asked else "")
+            + (f", {len(unreached)} rules whose situation the search never reaches" if unreached else ""))
         attempts.append(_run_agent(cfg, agent, prompt, f"repair-{n + 1}"))
         v = build_and_validate(cfg, Ledger.load(cfg.ledger_path), log, llm, retry=True)
         if v.matches:
             break
+        asked = gaps(cfg, v) if g else None
     if v.error and saved:
         log("the repaired model does not work; putting the previous one back")
         workspace.restore_model(cfg, saved)
         v = build_and_validate(cfg, Ledger.load(cfg.ledger_path), log, llm, retry=True)
-    g = gaps(cfg, v)
-    return v, g, {"rounds": len(attempts), "fixed": v.matches, "asked_about_unreached": bool(asked),
+    return v, gaps(cfg, v), {"rounds": len(attempts), "fixed": v.matches, "asked_about_unreached": bool(g),
                   "asked_about_situations": [e.id for e in unreached or []],
                   "cost_usd": _total(attempts, "cost_usd"), "seconds": _total(attempts, "seconds"),
                   "attempts": attempts}
@@ -324,7 +325,10 @@ def repair_prompt(cfg: Config, v: Validation, g: list | None, attempt: int = 0, 
                         + rules)
     active = Ledger.load(cfg.ledger_path).active()
     if active:
-        rules = "\n".join(f"- {e.id}: {e.text}\n  ```lean\n  {e.predicate.strip()}\n  ```" for e in active)
+        rules = "\n".join(f"- {e.id}: {e.text}\n  ```lean\n  {e.predicate.strip()}\n  ```"
+                          + (f"\n  Its situation:\n  ```lean\n  {e.situation_predicate.strip()}\n  ```"
+                             if e.situation_predicate else "")
+                          for e in active)
         sections.append("## The developer's rules (they use these names of the model)\n\n" + rules)
     return _fill("repair.md", cfg, SECTIONS="\n\n".join(sections))
 

@@ -8,11 +8,12 @@ program's source changes, a record is reused only if no change can affect that t
   executed any line of that function. Whole functions, not single lines: an inserted check
   between two lines a trace never ran can still be on its path (a new `elif` before an
   `else` it takes).
-- A change outside any function (a constant, an import, a class attribute) invalidates every
-  trace: module-level code runs once when the program is loaded and is in no trace's lines.
+- A change outside any function (a constant, an import, a class attribute), in any of the
+  program's files, invalidates every trace: module-level code runs once when the program is
+  loaded and is in no trace's lines.
 - Adding a whole new top-level function or class, under a new name, invalidates nothing
   until some existing code that traces run is changed to use it.
-- A file that does not parse, or disappears, invalidates every trace that touched it.
+- A file that does not parse, or disappears, invalidates every trace.
 
 This assumes the program's behavior depends only on its code and the trace (not on other
 files, the clock or the environment). A changed adapter invalidates everything, since
@@ -118,13 +119,14 @@ class ValidationCache:
         files = set(old) | set(self.sources)
         self.changed = {f: changed_old_lines(old.get(f), self.sources.get(f)) for f in files}
         self.maps = {f: line_map(old.get(f), self.sources.get(f)) for f in files}
+        self.everything_changed = any(c == ALL for c in self.changed.values())
         self.records = {}
 
     def get(self, key: str, mode: str) -> Record | None:
         """The cached record for a trace, in the current source's line numbers, if no code
         change can affect it."""
         r = self.old_records.get(key)
-        if not r or r["footprint"] is None or (mode == "all" and r["mode"] != "all"):
+        if not r or r["footprint"] is None or (mode == "all" and r["mode"] != "all") or self.everything_changed:
             return None
         fp = {}
         for f, lines in r["footprint"].items():

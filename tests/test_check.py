@@ -8,6 +8,7 @@ constraint is claimed checked only if the search reaches the situation it is abo
 """
 
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -83,6 +84,26 @@ class CheckTest(unittest.TestCase):
         self.assertIn("situation is reached", evidence["c1"]["detail"])
         self.assertEqual(evidence["c2"]["evidence"], "unchecked")       # it does hold, but search never tried
         self.assertIn("never reaches the situation", evidence["c2"]["why"])
+
+    def test_a_program_whose_runs_record_no_coverage_says_so_after_an_edit(self):
+        from companion.check import summary
+        from tests.support import apply
+        program = program_copy(self.dir / "program")
+        ledger = ledger_file(self.dir, TAG_KEYS_UNIQUE)
+        cfg = quick_config(self.dir, program=program, ledger=ledger, transition_depth=1, random_traces=0)
+        self.check(cfg)
+        apply(program, [("LATEST_SCHEMA_VERSION = 1\n", "LATEST_SCHEMA_VERSION = 1\nUNUSED_LIMIT = 1\n")])
+        old = os.environ.get("COMPANION_RUNNER")
+        os.environ["COMPANION_RUNNER"] = "subprocess"
+        try:
+            report = self.check(cfg)
+        finally:
+            os.environ.pop("COMPANION_RUNNER")
+            if old is not None:
+                os.environ["COMPANION_RUNNER"] = old
+        self.assertIsNone(report["unreached_changes"])
+        self.assertIn("no coverage was recorded", report["entries"][0]["detail"])
+        self.assertIn("record no coverage", summary(report))
 
     def test_checking_again_with_no_change_reruns_nothing_and_agrees(self):
         cfg = quick_config(self.dir, ledger=EXAMPLE_LEDGER)

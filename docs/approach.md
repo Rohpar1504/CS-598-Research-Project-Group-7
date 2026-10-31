@@ -108,7 +108,7 @@ Formalization depends on the model: $\varphi_e$ is a term over $M$'s types. When
 
 **Definition 1 (conformance).** $M$ conforms to $P$ through $D$ on a trace $w$, written $M \models_D w$, if $\rho_M(w) = \rho_P(w)$ component by component, with no $\bot$. For a set of traces, $M \models_D T$ if $M \models_D w$ for every $w \in T$.
 
-The comparison is made at every step, so $M \models_D T$ implies $M \models_D \mathrm{Pref}(T)$. The ideal is $M \models_D A^*$: equality of observable behavior through the adapter on every trace. With A1 and a deterministic model, that is a bisimulation on observables. Only a finite $T$ can be tested.
+With `observe: "all"`, the comparison is made at every step, so $M \models_D T$ implies $M \models_D \mathrm{Pref}(T)$. The default, `observe: "changes"`, compares outputs at every step, but reads the real state only where the model's state changes and at the end of each trace (§5). That costs nothing on $\mathrm{Cov}_d$, whose traces each end in the transition they cover, but a state difference in the middle of a random trace can go unseen if it does not last until the next read. The ideal is $M \models_D A^*$: equality of observable behavior through the adapter on every trace. With A1 and a deterministic model, that is a bisimulation on observables. Only a finite $T$ can be tested.
 
 ### 3.1 The validation set
 
@@ -126,11 +126,13 @@ $\mathrm{Cov}_d$ is computed from the model, so it covers the model's transition
 
 ### 3.2 Change impact
 
-Let $P_b$ be the program at the last turn where the model conformed (the baseline, `state/synced.json`). Let $\Delta_t$ be the statements of $P_t$ that are new or changed relative to $P_b$, counting only statements inside functions, and let $\mathrm{Lines}(T)$ be the statements that some trace in $T$ executed (recorded by `companion/runner.py`). The **gap** is
+Let $P_b$ be the program at the last turn where the model conformed and no changed code was left unexamined (the baseline, `state/synced.json`; §7 gives the exact condition). Let $\Delta_t$ be the statements of $P_t$ that are new or changed relative to $P_b$, counting only statements inside functions, and let $\mathrm{Lines}(T)$ be the statements that some trace in $T$ executed (recorded by `companion/runner.py`). The **gap** is
 
 $$\mathrm{Gap}_t = \Delta_t \setminus \mathrm{Lines}(T_t)$$
 
 (`companion/coverage.py`). A non-empty gap triggers repair even when $M \models_D T_t$, because validation can say nothing about code that no trace runs.
+
+$\mathrm{Lines}$ exists only for a program that is one Python file with a `main`. For any other program (several files, or another language) each run is a new process, which records nothing, so after an edit the gap is unknown. Unknown does not trigger repair. The report says so, in each `checked` entry and in a warning.
 
 ### 3.3 Repair
 
@@ -142,7 +144,7 @@ The model is never asked to match the developer's intent. Repair only ever moves
 
 Validation reuses the program's run $\rho_P(w)$ from an earlier turn unless the change $P_{t-1} \to P_t$ touches a function that $w$ executed, touches module-level code, or changes the adapter's source.
 
-**Proposition 0 (the cache changes no outcome).** Assume A1′, and assume line tracing records every function a run enters. Then a reused $\rho_P(w)$ equals what running $w$ on $P_t$ would give.
+**Proposition 0 (the cache changes no outcome).** Assume A1′, and assume line tracing records every function a run enters. The runner makes the second assumption true by tracing every function object of the program's file, and by refusing to fork a program that imports its own files; runs that are not traced are never reused. A program that loads its own code dynamically (`importlib` with a computed name) is not detected and breaks the assumption. Then a reused $\rho_P(w)$ equals what running $w$ on $P_t$ would give.
 
 *Sketch.* Under A1′, the run of $w$ is determined by the code it executes. If no function on its path changed, and no module-level code changed, the run follows the same path through the same statements. Adding a new top-level definition invalidates nothing until existing code is changed to call it, and that change is inside a function the trace executed. `tests/test_cache.py` checks this property empirically on forge edits.
 
@@ -165,7 +167,7 @@ $\mathrm{BFS}(M, \Sigma_i, B_i, \varphi, k)$ (`bfs` in Core.lean) returns a shor
 Two details of the implementation matter for what "checked" means:
 
 - **Transitions that leave the scope are not judged.** If $\mathit{step}(s, a)$ falls outside $B_i$, that transition is skipped before $\varphi$ is evaluated. A violation that leaves the scope in its last step is therefore missed, even within depth $k$.
-- **Each property runs its own BFS.** The cost is the number of properties times the area's states. The areas are small enough that this has not mattered so far: at most 1,713 states at depth 8, under 0.1 s each.
+- **Each property runs its own BFS.** The cost is the number of properties times the area's states. The areas are small enough that this has not mattered so far: at most 1,487 states at depth 8, under 0.1 s each.
 
 Default $k = 8$ (`search_depth`).
 
@@ -197,7 +199,7 @@ What Proposition 1 does **not** say:
 
 Under those two caveats, the companion gives no false alarms by construction. This has a consequence for RQ2 (§8.3).
 
-**Proposition 2 (relative completeness of bounded checking).** Suppose $M \models_D w$ for every trace $w$ of area $i$ up to length $k$ (inside $B_i$). If some such trace makes the program violate $\varphi_e$, the companion reports $e$ violated, with a trace no longer than the shortest one.
+**Proposition 2 (relative completeness of bounded checking).** Suppose $M \models_D T_t$, since otherwise the search does not run, and $M \models_D w$ for every trace $w$ of area $i$ up to length $k$ (inside $B_i$). If some such trace makes the program violate $\varphi_e$, the companion reports $e$ violated, with a trace no longer than the shortest one.
 
 *Sketch.* By conformance, the program's violating run equals the model's run. By Lemma 1, BFS finds a shortest violating $w$. Replaying $w$ on the code gives the same transitions, again by conformance, so the violation reproduces. ∎
 
@@ -211,7 +213,16 @@ A2 says that $\alpha$ keeps everything the program's future behavior depends on.
 
 *Sketch.* By induction on $|w|$. Write $w = u \cdot a$ with $|u| \le d$. By the induction hypothesis $M \models_D u$, and $u$ leads the model to some $s \in \mathrm{Reach}_{\le d}$. The covered trace $\pi(s) \cdot a$ conforms, and so does its prefix $\pi(s)$. By A2, the program's step $a$ after $u$ abstracts the same way as after $\pi(s)$, which is the model's step from $s$. ∎
 
-**Corollary.** With the defaults $d = 4$ and $k = 8$, Proposition 2 is backed by validation only up to depth 5. Steps 6 to 8 of the search rely on random traces and on A2 extending further. They are covered as well if the area's reachable set has stopped growing by depth 4 ($\mathrm{Reach}_{\le 4} = \mathrm{Reach}_{\le 8}$), because then $\mathrm{Cov}_4$ already covers every transition the search examines. Whether forge's areas stop growing that early has not been measured (§9, item 1).
+**Corollary.** With the defaults $d = 4$ and $k = 8$, Proposition 2 is backed by validation only up to depth 5. Steps 6 to 8 of the search rely on random traces and on A2 extending further. They are covered as well if the area's reachable set has stopped growing by depth 4 ($\mathrm{Reach}_{\le 4} = \mathrm{Reach}_{\le 8}$), because then $\mathrm{Cov}_4$ already covers every transition the search examines. On the forge model, this holds only for the unit area:
+
+| Area | $\lvert\mathrm{Reach}_{\le 4}\rvert$ | $\lvert\mathrm{Reach}_{\le 8}\rvert$ |
+| --- | --- | --- |
+| alloc | 79 | 1,487 |
+| unit | 11 | 11 |
+| module | 46 | 281 |
+| access | 12 | 20 |
+
+So for three of the four areas, `checked` is backed by validation only to depth 5. Validating every transition to depth 8 would take 27,532 traces, against 2,072 at depth 4.
 
 **Proposition 3 (proofs, design only).** If Lean proves that every action preserves $\varphi$ on the model, and $M \models_D A^*$, then every reachable state of the program satisfies $\varphi$, for traces of any length. In practice only $M \models_D T_t$ is established, so "proved" means: true of the model for traces of any length, and the model conforms on $T_t$. The forge model has 7 hand-written proofs (`apps/forge/lean/Forge/Proofs.lean`), but no proof attempts run in the per-turn pipeline.
 
@@ -331,7 +342,7 @@ Two related works that the approach relies on are cited in the brief but not in 
 
 In order of value for report 2. Each item is small.
 
-1. **Validate as deep as the search goes, or measure.** Log $\lvert\mathrm{Reach}_{\le 4}\rvert$ and $\lvert\mathrm{Reach}_{\le 8}\rvert$ per area. If they differ, either raise `transition_depth` for small areas or report `checked` to depth 5 (Lemma 2). This costs one extra `paths` call per area.
+1. **Validate as deep as the search goes.** The sizes differ on forge (§5, Corollary), so either raise `transition_depth` for small areas, or report `checked` to depth 5 (Lemma 2).
 2. **Check W1 (every violation is in its situation).** Add a second probe per entry, $\varphi_e \lor \psi_e$. A counterexample is a violation outside the stated situation, which means the situation is too narrow. The search is the same as for the probes that exist.
 3. **Count situation witnesses.** Report how many examined transitions satisfy $\psi_e$, not only whether one does, so that a vague situation is visible. An entry without $\psi_e$ should be labeled `checked (no situation)`.
 4. **Judge transitions that leave the scope.** Evaluate $\varphi$ before pruning on $B_i$ in `bfs`. It is a two-line change, and a violation whose last step leaves the scope is then still found. States outside the scope are still not expanded.
