@@ -1,0 +1,295 @@
+{
+ "checker": "pbt-areas",
+ "budget": 300.0,
+ "workers": 2,
+ "cases": [
+  {
+   "case": "reference",
+   "intended": null,
+   "verdict": "clean",
+   "found": null,
+   "examples": 999
+  },
+  {
+   "case": "bind-no-duplicate-guard",
+   "intended": "a bind that adds to an assignment succeeds only if the assignment has no bound allocations",
+   "verdict": "missed",
+   "found": null,
+   "examples": 978
+  },
+  {
+   "case": "bind-not-atomic",
+   "intended": "a rejected request leaves the state unchanged",
+   "verdict": "missed",
+   "found": null,
+   "examples": 996
+  },
+  {
+   "case": "delete-names-partial",
+   "intended": "a rejected request leaves the state unchanged",
+   "verdict": "caught",
+   "found": {
+    "property": "a rejected request leaves the state unchanged",
+    "how": "pbt",
+    "seconds": 18.5,
+    "steps": 10,
+    "trace": [
+     "schemaUpgrade",
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": {
+        "value": {
+         "t": 0
+        }
+       }
+      }
+     },
+     "ledger",
+     {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     },
+     "schemaInit",
+     {
+      "alDeleteAssignment": {
+       "assignment": 0
+      }
+     },
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     "schemaUpgrade",
+     {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     }
+    ],
+    "shortest_steps": 2
+   },
+   "examples": 361
+  },
+  {
+   "case": "flash-any-image",
+   "intended": "a flash succeeds only with an image some module already had",
+   "verdict": "missed",
+   "found": null,
+   "examples": 1013,
+   "note": "rerun: the first run was interrupted (the Mac likely slept) and reached only 257 traces; also missed"
+  },
+  {
+   "case": "module-not-linked",
+   "intended": "a unit lists exactly the modules attached to it",
+   "verdict": "caught",
+   "found": {
+    "property": "a unit lists exactly the modules attached to it",
+    "how": "pbt",
+    "seconds": 1.8,
+    "steps": 9,
+    "trace": [
+     {
+      "bpGetByName": {
+       "name": 0
+      }
+     },
+     {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     "schemaInit",
+     {
+      "modList": {
+       "filter": "all"
+      }
+     },
+     {
+      "unitActivate": {
+       "id": 0
+      }
+     },
+     {
+      "alDeleteAssignment": {
+       "assignment": 0
+      }
+     },
+     {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     },
+     {
+      "alDeleteIds": {
+       "ids": [
+        {
+         "id": {
+          "k": 0
+         }
+        }
+       ]
+      }
+     },
+     {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     }
+    ],
+    "shortest_steps": 2
+   },
+   "examples": 315
+  },
+  {
+   "case": "remove-keeps-assignment",
+   "intended": "an allocation is bound exactly when it has an assignment",
+   "verdict": "missed",
+   "found": null,
+   "examples": 995
+  },
+  {
+   "case": "system-scope-allowed",
+   "intended": "blueprint create and delete never succeed in system scope",
+   "verdict": "caught",
+   "found": {
+    "property": "blueprint create and delete never succeed in system scope",
+    "how": "pbt",
+    "seconds": 0.8,
+    "steps": 1,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     }
+    ],
+    "shortest_steps": 1
+   },
+   "examples": 177
+  },
+  {
+   "case": "tag-duplicate-allowed",
+   "intended": "no module has two tags with the same key",
+   "verdict": "missed",
+   "found": null,
+   "examples": 993
+  },
+  {
+   "case": "tenant-always-visible",
+   "intended": "tenant_id is shown only at revision 1.1 or higher",
+   "verdict": "caught",
+   "found": {
+    "property": "tenant_id is shown only at revision 1.1 or higher",
+    "how": "pbt",
+    "seconds": 46.5,
+    "steps": 2,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     }
+    ],
+    "shortest_steps": 2
+   },
+   "examples": 360
+  },
+  {
+   "case": "typea-not-doubled",
+   "intended": "allocation create yields two allocations per TYPE_A requirement set and one per other set",
+   "verdict": "missed",
+   "found": null,
+   "examples": 1005
+  }
+ ]
+}

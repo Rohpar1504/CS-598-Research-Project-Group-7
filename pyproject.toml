@@ -5,6 +5,9 @@ description = "A Lean companion for vibe coding: checks an agent's code against 
 requires-python = ">=3.12"   # sys.monitoring, used to record which lines each run executes
 dependencies = []
 
+[project.optional-dependencies]
+dev = ["hypothesis", "pytest"]   # Study A's PBT checker (studies/detection) and the tests
+
 [project.scripts]
 companion = "companion.__main__:main"
 
