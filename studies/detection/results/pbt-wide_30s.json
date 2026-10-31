@@ -1,0 +1,106 @@
+{
+ "checker": "pbt-wide",
+ "budget": 30.0,
+ "workers": 2,
+ "cases": [
+  {
+   "case": "reference",
+   "intended": null,
+   "verdict": "clean",
+   "found": null,
+   "examples": 191
+  },
+  {
+   "case": "bind-no-duplicate-guard",
+   "intended": "a bind that adds to an assignment succeeds only if the assignment has no bound allocations",
+   "verdict": "missed",
+   "found": null,
+   "examples": 196
+  },
+  {
+   "case": "bind-not-atomic",
+   "intended": "a rejected request leaves the state unchanged",
+   "verdict": "missed",
+   "found": null,
+   "examples": 195
+  },
+  {
+   "case": "delete-names-partial",
+   "intended": "a rejected request leaves the state unchanged",
+   "verdict": "missed",
+   "found": null,
+   "examples": 188
+  },
+  {
+   "case": "flash-any-image",
+   "intended": "a flash succeeds only with an image some module already had",
+   "verdict": "missed",
+   "found": null,
+   "examples": 196
+  },
+  {
+   "case": "module-not-linked",
+   "intended": "a unit lists exactly the modules attached to it",
+   "verdict": "missed",
+   "found": null,
+   "examples": 196
+  },
+  {
+   "case": "remove-keeps-assignment",
+   "intended": "an allocation is bound exactly when it has an assignment",
+   "verdict": "missed",
+   "found": null,
+   "examples": 197
+  },
+  {
+   "case": "system-scope-allowed",
+   "intended": "blueprint create and delete never succeed in system scope",
+   "verdict": "caught",
+   "found": {
+    "property": "blueprint create and delete never succeed in system scope",
+    "how": "pbt",
+    "seconds": 2.0,
+    "steps": 1,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     }
+    ],
+    "shortest_steps": 1
+   },
+   "examples": 138
+  },
+  {
+   "case": "tag-duplicate-allowed",
+   "intended": "no module has two tags with the same key",
+   "verdict": "missed",
+   "found": null,
+   "examples": 196
+  },
+  {
+   "case": "tenant-always-visible",
+   "intended": "tenant_id is shown only at revision 1.1 or higher",
+   "verdict": "missed",
+   "found": null,
+   "examples": 197
+  },
+  {
+   "case": "typea-not-doubled",
+   "intended": "allocation create yields two allocations per TYPE_A requirement set and one per other set",
+   "verdict": "missed",
+   "found": null,
+   "examples": 196
+  }
+ ]
+}

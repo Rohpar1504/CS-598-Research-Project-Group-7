@@ -38,12 +38,15 @@ studies/
   preliminary/            regressions in EvoCode-Bench's published results
   feasibility/            the forge prototype's experiments; results/ holds their output
   synthesis/              the standalone run of an LLM writing forge's model, and its grader
+  detection/              Study A (RQ2): the Lean checker against property-based testing on
+                          forge's seeded bugs; results/ holds their output
 data/                     downloaded benchmarks and generated files (not in git)
 ```
 
 ## Running
 
-Requires Lean through elan, and Python 3.12 or later (no other Python packages). Either run
+Requires Lean through elan, and Python 3.12 or later. The companion needs no other Python
+packages; Study A's property-based tests need Hypothesis (`pip install -e ".[dev]"`). Either run
 from the repository root, or install with `pip install -e .`, which also provides a `companion`
 command.
 
@@ -57,9 +60,13 @@ python3 studies/preliminary/summarize.py
 python3 -m studies.feasibility.make_mutants                              # forge prototype
 python3 -m studies.feasibility.validate --checkpoints 8
 python3 -m studies.feasibility.search_and_confirm
+
+python3 -m studies.detection.run --budget 30                             # Study A: Lean vs PBT
+python3 -m studies.detection.run --budget 300                            # (needs make_mutants first)
 ```
 
 [docs/feasibility-study.md](docs/feasibility-study.md) lists every experiment command.
+[docs/results.md](docs/results.md) has Study A's results.
 
 ## Tests
 
