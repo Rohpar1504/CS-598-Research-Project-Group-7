@@ -1,0 +1,350 @@
+{
+ "budget": 30.0,
+ "workers": 2,
+ "cases": [
+  {
+   "case": "reference",
+   "intended": null,
+   "verdict": "clean",
+   "found": null,
+   "traces_run": 547,
+   "depth_reached": 3
+  },
+  {
+   "case": "bind-no-duplicate-guard",
+   "intended": "a bind that adds to an assignment succeeds only if the assignment has no bound allocations",
+   "verdict": "caught",
+   "found": {
+    "property": "a bind that adds to an assignment succeeds only if the assignment has no bound allocations",
+    "how": "model search",
+    "seconds": 0.3,
+    "steps": 4,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     }
+    ]
+   },
+   "traces_run": 0,
+   "depth_reached": null
+  },
+  {
+   "case": "bind-not-atomic",
+   "intended": "a rejected request leaves the state unchanged",
+   "verdict": "caught",
+   "found": {
+    "property": "a rejected request leaves the state unchanged",
+    "how": "model-chosen traces",
+    "seconds": 8.1,
+    "steps": 3,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     },
+     {
+      "alBind": {
+       "assignment": 0,
+       "ops": [
+        [
+         0,
+         "add"
+        ],
+        [
+         9,
+         "add"
+        ]
+       ],
+       "tenant": "absent"
+      }
+     }
+    ]
+   },
+   "traces_run": 179,
+   "depth_reached": 2
+  },
+  {
+   "case": "delete-names-partial",
+   "intended": "a rejected request leaves the state unchanged",
+   "verdict": "caught",
+   "found": {
+    "property": "a rejected request leaves the state unchanged",
+    "how": "model search",
+    "seconds": 0.3,
+    "steps": 2,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "bpDeleteNames": {
+       "names": [
+        {
+         "name": {
+          "n": 0
+         }
+        },
+        {
+         "name": {
+          "n": 1
+         }
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "traces_run": 0,
+   "depth_reached": null
+  },
+  {
+   "case": "flash-any-image",
+   "intended": "a flash succeeds only with an image some module already had",
+   "verdict": "caught",
+   "found": {
+    "property": "a flash succeeds only with an image some module already had",
+    "how": "model search",
+    "seconds": 0.4,
+    "steps": 3,
+    "trace": [
+     {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     },
+     {
+      "modFlash": {
+       "id": 0,
+       "image": {
+        "image": {
+         "i": 1
+        }
+       }
+      }
+     }
+    ]
+   },
+   "traces_run": 0,
+   "depth_reached": null
+  },
+  {
+   "case": "module-not-linked",
+   "intended": "a unit lists exactly the modules attached to it",
+   "verdict": "caught",
+   "found": {
+    "property": "a unit lists exactly the modules attached to it",
+    "how": "model-chosen traces",
+    "seconds": 3.9,
+    "steps": 2,
+    "trace": [
+     {
+      "unitCreate": {
+       "capacity": 1,
+       "caps": [],
+       "category": 0,
+       "host": 0,
+       "parent": null
+      }
+     },
+     {
+      "modCreate": {
+       "ctype": 0,
+       "firmware": {
+        "image": {
+         "i": 0
+        }
+       },
+       "unit": 0
+      }
+     }
+    ]
+   },
+   "traces_run": 99,
+   "depth_reached": 1
+  },
+  {
+   "case": "remove-keeps-assignment",
+   "intended": "an allocation is bound exactly when it has an assignment",
+   "verdict": "missed",
+   "found": null,
+   "traces_run": 547,
+   "depth_reached": 3
+  },
+  {
+   "case": "system-scope-allowed",
+   "intended": "blueprint create and delete never succeed in system scope",
+   "verdict": "caught",
+   "found": {
+    "property": "blueprint create and delete never succeed in system scope",
+    "how": "model-chosen traces",
+    "seconds": 1.7,
+    "steps": 1,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "traces_run": 49,
+   "depth_reached": 0
+  },
+  {
+   "case": "tag-duplicate-allowed",
+   "intended": "no module has two tags with the same key",
+   "verdict": "missed",
+   "found": null,
+   "traces_run": 547,
+   "depth_reached": 3
+  },
+  {
+   "case": "tenant-always-visible",
+   "intended": "tenant_id is shown only at revision 1.1 or higher",
+   "verdict": "caught",
+   "found": {
+    "property": "tenant_id is shown only at revision 1.1 or higher",
+    "how": "model-chosen traces",
+    "seconds": 3.9,
+    "steps": 2,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 0,
+       "sets": [
+        {
+         "caps": null,
+         "count": 1,
+         "rtype": 0
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 0
+      }
+     }
+    ]
+   },
+   "traces_run": 99,
+   "depth_reached": 1
+  },
+  {
+   "case": "typea-not-doubled",
+   "intended": "allocation create yields two allocations per TYPE_A requirement set and one per other set",
+   "verdict": "caught",
+   "found": {
+    "property": "allocation create yields two allocations per TYPE_A requirement set and one per other set",
+    "how": "model-chosen traces",
+    "seconds": 4.1,
+    "steps": 2,
+    "trace": [
+     {
+      "bpCreate": {
+       "name": 1,
+       "sets": [
+        {
+         "caps": [
+          0
+         ],
+         "count": 2,
+         "rtype": 1
+        }
+       ]
+      }
+     },
+     {
+      "alCreate": {
+       "blueprint": 1
+      }
+     }
+    ]
+   },
+   "traces_run": 99,
+   "depth_reached": 1
+  }
+ ]
+}
