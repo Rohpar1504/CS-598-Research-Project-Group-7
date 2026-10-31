@@ -4,12 +4,13 @@ Cases: forge's checkpoint 8 reference solution (no bug) and the ten seeded bugs 
 studies/feasibility/make_mutants.py (in data/forge-mutants/).
 
 Both checkers are judged by the same 14 specification properties of the Lean model
-(lean/Forge/Props.lean), evaluated on what the real program did. The two "[extra]"
-properties are not in forge's specification and are ignored.
+(apps/forge/lean/Forge/Props.lean), evaluated on what the real program did. The two
+"[extra]" properties are not in forge's specification and are ignored.
 
 Checkers:
-- lean: for the three bugs that have a model that follows them (lean/Forge/Variants.lean),
-  first the model's own bounded search, with each counterexample replayed on the program.
+- lean: for the three bugs that have a model that follows them
+  (apps/forge/lean/Forge/Variants.lean), first the model's own bounded search, with each
+  counterexample replayed on the program.
   Then traces chosen from the Lean model's state space, shortest first (transition coverage
   at depth 0, 1, 2, ...), run on the program.
 - pbt: added in the next step.
@@ -26,12 +27,12 @@ import json
 import time
 from pathlib import Path
 
-from companion.adapters.forge import ForgeAdapter
+from apps.forge.adapter import ForgeAdapter
 from companion.lean import LeanModel
 from companion.trace_validation import default_workers, transition_traces, validate, validate_trace
 
 ROOT = Path(__file__).resolve().parents[2]
-EXE = ROOT / "lean" / ".lake" / "build" / "bin" / "forge-model"
+EXE = ROOT / "apps" / "forge" / "lean" / ".lake" / "build" / "bin" / "forge-model"
 REFERENCE = ROOT / "data" / "scb-problems" / "forge" / "solutions" / "checkpoint_8" / "forge"
 MUTANTS = ROOT / "data" / "forge-mutants"
 RESULTS = Path(__file__).parent / "results"
