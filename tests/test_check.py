@@ -30,7 +30,7 @@ class CheckTest(unittest.TestCase):
 
     def assert_reproduction_breaks(self, cfg, entry):
         """Run the reported trace again on the real program: the constraint must fail."""
-        from companion.adapters.forge import ForgeAdapter
+        from apps.forge.adapter import ForgeAdapter
         from companion.lean import LeanModel
         from companion.trace_validation import validate_trace
         adapter = ForgeAdapter(cfg.program)

@@ -8,7 +8,7 @@ from pathlib import Path
 class LeanModel:
     def __init__(self, exe: Path, variant: str = "reference"):
         self.exe = str(exe)
-        self.variant = variant  # which model of the code to use (see Forge/Variants.lean)
+        self.variant = variant  # which model of the code to use (an `App.variants` entry, Companion/Cli.lean)
 
     def _run(self, *args: str, payload=None):
         result = subprocess.run(

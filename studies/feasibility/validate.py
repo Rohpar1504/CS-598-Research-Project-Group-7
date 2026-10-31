@@ -1,4 +1,4 @@
-"""Trace-validate the forge model (lean/Forge) against forge's checkpoint 8
+"""Trace-validate the forge model (apps/forge/lean/Forge) against forge's checkpoint 8
 reference solution, or against seeded-bug versions of it.
 
 Traces: shortest paths to reachable states in each search area, plus random traces over
@@ -19,12 +19,12 @@ import time
 from collections import Counter
 from pathlib import Path
 
-from companion.adapters.forge import ForgeAdapter
+from apps.forge.adapter import ForgeAdapter
 from companion.lean import LeanModel
 from companion.trace_validation import action_kind, default_workers, random_traces, transition_traces as _transition_traces, validate
 
 ROOT = Path(__file__).resolve().parents[2]
-EXE = ROOT / "lean" / ".lake" / "build" / "bin" / "forge-model"
+EXE = ROOT / "apps" / "forge" / "lean" / ".lake" / "build" / "bin" / "forge-model"
 SOLUTIONS = ROOT / "data" / "scb-problems" / "forge" / "solutions"
 MUTANTS = ROOT / "data" / "forge-mutants"
 RESULTS = Path(__file__).parent / "results"

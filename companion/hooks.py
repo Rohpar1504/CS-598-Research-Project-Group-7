@@ -8,7 +8,7 @@
   when the agent stops again after being blocked (`stop_hook_active`), it is let through.
 
 Companion failures never block the agent; they are reported to the developer instead.
-See apps/forge/claude-settings.json for how the hooks are registered.
+See docs/claude-settings.example.json for how the hooks are registered.
 """
 
 import json

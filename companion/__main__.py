@@ -15,8 +15,8 @@ it from the current directory (or a parent), as git finds `.git`.
   companion validate [--quick]          trace-validate the model against the program (debugging)
   companion build                       typecheck the constraints and build the model (debugging)
 
-Every command takes `--workspace PATH` to use another workspace, or a fixed config such as
-apps/forge/companion.json (also COMPANION_WORKSPACE).
+Every command takes `--workspace PATH` to use another workspace, or a fixed config (see
+companion/config.py); also COMPANION_WORKSPACE.
 """
 
 import argparse

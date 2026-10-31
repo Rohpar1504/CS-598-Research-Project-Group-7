@@ -30,7 +30,7 @@ class ValidationTest(unittest.TestCase):
         cls.truth = {name: one_trace_at_a_time(cls.model, p, cls.traces) for name, p in cls.programs.items()}
 
     def validate(self, name, observe):
-        from companion.adapters.forge import ForgeAdapter
+        from apps.forge.adapter import ForgeAdapter
         from companion.trace_validation import validate
         program = self.programs[name]
         return validate(lambda: ForgeAdapter(program), self.model, self.traces, workers=WORKERS, observe=observe)
@@ -71,7 +71,7 @@ class ValidationTest(unittest.TestCase):
         self.assertTrue(any(r.violations for r in results))   # the [extra] properties do fail on forge
 
     def test_output_the_model_cannot_express_is_a_mismatch_not_a_crash(self):
-        from companion.adapters.forge import ForgeAdapter
+        from apps.forge.adapter import ForgeAdapter
         from companion.trace_validation import validate
         program = program_copy(self.dir / "uppercase", [('        "name": name,\n', '        "name": name.upper(),\n')])
         results = validate(lambda: ForgeAdapter(program), self.model, self.traces, workers=WORKERS, observe="changes")

@@ -1,7 +1,7 @@
 """Shared setup for the tests: paths, the forge program and its edits, quick configs.
 
 The tests that use forge need the SlopCodeBench problems (studies/feasibility/fetch_data.sh)
-and the Lean build (`cd lean && lake build`); they are skipped otherwise.
+and the Lean build (`cd apps/forge/lean && lake build`); they are skipped otherwise.
 """
 
 import json
@@ -15,11 +15,11 @@ ROOT = Path(__file__).resolve().parents[1]
 # validation forks a process per program run, and many workers at once can overload a machine.
 os.environ.setdefault("COMPANION_TMP", str(ROOT / "data" / "tmp"))
 WORKERS = 2
-LEAN = ROOT / "lean"
-FORGE_MODEL = LEAN / ".lake" / "build" / "bin" / "forge-model"
+FORGE = ROOT / "apps" / "forge"
+FORGE_MODEL = FORGE / "lean" / ".lake" / "build" / "bin" / "forge-model"
 REFERENCE_DIR = ROOT / "data" / "scb-problems" / "forge" / "solutions" / "checkpoint_8"
 REFERENCE = REFERENCE_DIR / "forge"
-EXAMPLE_LEDGER = ROOT / "apps" / "forge" / "example-ledger.json"
+EXAMPLE_LEDGER = FORGE / "example-ledger.json"
 
 requires_forge = unittest.skipUnless(REFERENCE.exists() and FORGE_MODEL.exists(),
                                      "needs data/scb-problems (fetch_data.sh) and `lake build`")
@@ -49,7 +49,7 @@ def one_trace_at_a_time(model, program: Path, traces: list) -> list:
 
 
 def _one_chunk(job):
-    from companion.adapters.forge import ForgeAdapter
+    from apps.forge.adapter import ForgeAdapter
     from companion.trace_validation import validate_trace
     model, program, traces = job
     adapter = ForgeAdapter(program)
@@ -91,8 +91,8 @@ def quick_config(directory: Path, program: Path = REFERENCE, ledger: Path | None
     from companion.config import Config
     from companion.ledger import Ledger
     settings = {"transition_depth": 2, "random_traces": 20, "random_seed": 1, "search_depth": 6, **check}
-    base = json.loads((ROOT / "apps" / "forge" / "companion.json").read_text())
-    base.update({"root": str(ROOT), "state_dir": str(directory / "state"), "check": settings})
+    base = json.loads((FORGE / "companion.json").read_text())
+    base.update({"root": str(FORGE), "state_dir": str(directory / "state"), "check": settings})
     path = directory / "companion.json"
     path.write_text(json.dumps(base))
     cfg = Config.load(path, str(program))
@@ -121,10 +121,10 @@ def forge_workspace(directory: Path, program: Path, ledger: Path | None = None, 
 
 
 def seed_forge(cfg) -> None:
-    """Put the hand-built forge model (lean/Forge) and adapter into a workspace."""
+    """Put the hand-built forge model and adapter (apps/forge) into a workspace."""
     from companion import workspace
-    workspace.seed(cfg, {f: LEAN / "Forge" / f for f in ("Model.lean", "Props.lean", "App.lean")},
-                   ["Forge.App", "Forge.Props"], ROOT / "companion" / "adapters" / "forge.py", "ForgeAdapter")
+    workspace.seed(cfg, {f: FORGE / "lean" / "Forge" / f for f in ("Model.lean", "Props.lean", "App.lean")},
+                   ["Forge.App", "Forge.Props"], FORGE / "adapter.py", "ForgeAdapter")
 
 
 class StandInAgent:

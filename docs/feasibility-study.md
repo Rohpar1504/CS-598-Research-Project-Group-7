@@ -1,6 +1,6 @@
 # Feasibility Prototype: Lean Models of the Forge App
 
-Oct 1–2, 2026. Code: [lean/](../lean/) and [companion/](../companion/). Experiments: [studies/feasibility/](../studies/feasibility/).
+Oct 1–2, 2026. Code: [apps/forge/](../apps/forge/), [lean/](../lean/) and [companion/](../companion/). Experiments: [studies/feasibility/](../studies/feasibility/).
 
 ## Question
 
@@ -19,12 +19,12 @@ The target is SlopCodeBench's `forge`: units, their activation and the capabilit
 | Component | Lines (code only) | What it does |
 | --- | --- | --- |
 | `lean/Companion/Core.lean` | 80 | Generic: the `Model` structure, replay, breadth-first search for property violations, picking traces to validate |
-| `lean/Forge/Model.lean` | 150 | State, 7 kinds of action (including invalid inputs and list filters), outputs, `step`, observation, two search scopes |
-| `lean/Forge/Props.lean` | 51 | 7 properties of the kind a developer would state (below) |
-| `lean/Forge/Proofs.lean` | 28 | 4 theorems about `step` |
-| `lean/Forge/Variants.lean` | 30 | Models that follow two of the seeded bugs |
-| `lean/Forge/Main.lean` | 47 | JSON command line: `alphabet`, `paths`, `replay`, `check`, `eval` |
-| `companion/adapters/forge.py` | 162 | Turns abstract actions into real commands, and real output into the model's terms |
+| `apps/forge/lean/Forge/Model.lean` | 150 | State, 7 kinds of action (including invalid inputs and list filters), outputs, `step`, observation, two search scopes |
+| `apps/forge/lean/Forge/Props.lean` | 51 | 7 properties of the kind a developer would state (below) |
+| `apps/forge/lean/Forge/Proofs.lean` | 28 | 4 theorems about `step` |
+| `apps/forge/lean/Forge/Variants.lean` | 30 | Models that follow two of the seeded bugs |
+| `apps/forge/lean/Forge/Main.lean` | 47 | JSON command line: `alphabet`, `paths`, `replay`, `check`, `eval` |
+| `apps/forge/adapter.py` | 162 | Turns abstract actions into real commands, and real output into the model's terms |
 | `companion/trace_validation.py` | 61 | Runs traces on the code and on the model, compares them, evaluates properties on the real run |
 
 These are the properties. Each is a Lean predicate on an observed transition, so the same predicate runs on the model and on the real application:
@@ -112,7 +112,7 @@ The file checks in under a second. These are local invariants. None needed an au
 
 ### What was built
 
-`lean/Forge/` models the checkpoint 8 reference solution as a whole:
+`apps/forge/lean/Forge/` models the checkpoint 8 reference solution as a whole:
 
 - **Blueprints:** create, get by ID or by name, delete by ID or by a list of names.
 - **Allocations:** expanded from blueprints, with TYPE_A requirement sets doubling. Then binding, with its duplicate-assignment guard, its order of error checks and tenants, and deletion by assignment or by ID list.
@@ -131,7 +131,7 @@ Left out: `check readiness` and plugin configuration, which depend on configurat
 | `Forge/Props.lean` | 94: 14 properties from the specification, and 2 "extra" ones |
 | `Forge/Proofs.lean` | 71: 7 theorems |
 | `Forge/Variants.lean` | 51: models that follow three of the seeded bugs |
-| `companion/adapters/forge.py` | 355 |
+| `apps/forge/adapter.py` | 355 |
 
 The reference solution is about 1,800 lines of Python. The model is about a third of that, and the adapter about a fifth.
 
@@ -241,7 +241,7 @@ Part 2:
 
 ```
 studies/feasibility/fetch_data.sh                    # SlopCodeBench problems into data/
-(cd lean && lake build)                              # model, properties, proofs, forge-model
+(cd apps/forge/lean && lake build)                   # model, properties, proofs, forge-model
 python3 -m studies.feasibility.make_mutants          # seeded bugs into data/forge-mutants/
 python3 -m studies.feasibility.validate --checkpoints 7 8
 python3 -m studies.feasibility.validate --mutants

@@ -6,9 +6,9 @@ Two kinds of config:
   directory for one application, holding a model and an adapter that an LLM writes and keeps
   up to date (companion/workspace.py describes the layout). Everything except the program is
   derived from the workspace's layout.
-- A **fixed** config (apps/forge/companion.json): a model and adapter that live elsewhere and
-  are maintained by hand, such as the hand-built forge model in lean/Forge. Every path is
-  given. The companion cannot repair such a model; it only reports that it no longer matches.
+- A **fixed** config: a model and adapter that live elsewhere and are maintained by hand, such
+  as a reference model (apps/forge/companion.json). Every path is given. The companion cannot
+  repair such a model; it only reports that it no longer matches.
 
 Relative paths are resolved against the config's `root` (by default its own directory).
 """
@@ -28,7 +28,7 @@ class Config:
     root: Path                  # project root; relative paths below are resolved against it
     app: str
     lean_dir: Path              # the Lake project
-    ledger_module: str          # e.g. Forge.Ledger
+    ledger_module: str          # e.g. App.Ledger
     ledger_file: Path           # the generated Lean file for that module
     lean_header: str            # imports, namespace and opens for the generated module
     lean_footer: str
@@ -61,9 +61,11 @@ class Config:
                        property_type=PROPERTY_TYPE, exe="companion-app", adapter=f"{ws / 'adapter.py'}:Adapter",
                        program=prog, state_dir=ws / "state", vocabulary=[], check=d.get("check", {}),
                        sources=d.get("sources"), workspace=ws, namespace=ns, agent=d.get("agent", {}))
+        target, name = d["adapter"].rsplit(":", 1)
+        adapter = f"{r(target)}:{name}" if target.endswith(".py") else d["adapter"]
         return cls(root=root, app=d["app"], lean_dir=r(d["lean_dir"]), ledger_module=d["ledger_module"],
                    ledger_file=r(d["ledger_file"]), lean_header=d["lean_header"], lean_footer=d["lean_footer"],
-                   property_type=d["property_type"], exe=d["exe"], adapter=d["adapter"],
+                   property_type=d["property_type"], exe=d["exe"], adapter=adapter,
                    program=prog, state_dir=r(d["state_dir"]), vocabulary=[r(v) for v in d.get("vocabulary", [])],
                    check=d.get("check", {}), sources=d.get("sources"))
 
